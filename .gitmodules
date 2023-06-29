@@ -1,0 +1,12 @@
+[submodule "3rdparty/libpng"]
+	path = 3rdparty/libpng
+	url = git@github.com:glennrp/libpng.git
+[submodule "3rdparty/sdl"]
+	path = 3rdparty/sdl
+	url = git@github.com:SDL-mirror/SDL.git
+[submodule "3rdparty/sdl-image"]
+	path = 3rdparty/sdl-image
+	url = git@github.com:SDL-mirror/SDL_image.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = git@github.com:madler/zlib.git

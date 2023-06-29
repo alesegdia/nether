@@ -1,0 +1,5 @@
+dofile("libSetup.lua")
+dofile("libs/sdl/sdl.lua")
+dofile("libs/sdl/sdl-image.lua")
+dofile("libs/libpng/libpng.lua")
+dofile("libs/zlib/zlib.lua")
