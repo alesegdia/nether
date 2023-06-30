@@ -1,8 +1,9 @@
 solution("nether")
+	location "build"
 
 dofile("3rdparty/genius/genius.lua")
 
-defineSDLLib("3rdparty/sdl")
+defineSDLLib("3rdparty/sdl", "build")
 
 defineSDLImageLib(
 	"3rdparty/sdl-image",
@@ -15,10 +16,7 @@ defineLibPNGLib(
 	"3rdparty/libpng",
 	"3rdparty/zlib")
 
-	
-defineZLib("3rdparty/zlib")
-
-
+defineZLib("3rdparty/zlib", "build")
 
 function netherProject(projectName)
 	project (projectName)
@@ -47,7 +45,9 @@ function netherProject(projectName)
 		includedirs {
 			"src",
 			"3rdparty/glad/include",
-			sdlIncludeDirs("3rdparty/sdl")
+			"3rdparty/glm",
+			sdlIncludeDirs("3rdparty/sdl"),
+			"module/rztl/include",
 		}
 
 		files {

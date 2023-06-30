@@ -10,3 +10,9 @@
 [submodule "3rdparty/zlib"]
 	path = 3rdparty/zlib
 	url = git@github.com:madler/zlib.git
+[submodule "module/rztl"]
+	path = module/rztl
+	url = git@github.com:alesegdia/rztl.git
+[submodule "3rdparty/glm"]
+	path = 3rdparty/glm
+	url = git@github.com:g-truc/glm.git

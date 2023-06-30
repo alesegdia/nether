@@ -1,8 +1,8 @@
 
 dofile("sdl-files.lua")
 
-function defineSDLLib(baseDir)
-	defineStaticLib("sdl", ".", ".", true)
+function defineSDLLib(baseDir, buildPath)
+	defineStaticLib("sdl", buildPath, ".", true)
 
 		includedirs {
 			sdlIncludeDirs(baseDir)

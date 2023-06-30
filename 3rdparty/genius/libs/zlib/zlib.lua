@@ -1,6 +1,6 @@
 
-function defineZLib(baseDir)
-	defineStaticLib("zlib", ".", ".", true)
+function defineZLib(baseDir, buildPath)
+	defineStaticLib("zlib", buildPath, ".", true)
 
 		configuration {}
 		
