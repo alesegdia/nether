@@ -46,8 +46,8 @@ function netherProject(projectName)
 			"src",
 			"3rdparty/glad/include",
 			"3rdparty/glm",
-			sdlIncludeDirs("3rdparty/sdl"),
 			"module/rztl/include",
+			sdlIncludeDirs("3rdparty/sdl")
 		}
 
 		files {

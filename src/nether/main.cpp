@@ -5,32 +5,78 @@
 #include <glad/gl.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
+namespace nether
+{
+    class SDLContext
+    {
+    public:
+        void Init(int width, int height)
+        {
+            // code without checking for errors
+            SDL_Init(SDL_INIT_VIDEO);
+
+            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+            window = SDL_CreateWindow(
+                "[glad] GL with SDL",
+                SDL_WINDOWPOS_CENTERED,
+                SDL_WINDOWPOS_CENTERED,
+                width, height,
+                SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+            );
+
+            SDL_GLContext context = SDL_GL_CreateContext(window);
+
+            int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
+            printf("GL %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
+        }
+
+        void BeginRender()
+        {
+            glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+        }
+
+        void EndRender()
+        {
+            SDL_GL_SwapWindow(window);
+        }
+
+    private:
+        SDL_Window* window;
+
+    };
+
+    class Scene
+    {
+	    
+    };
+
+    class 2
+    {
+    public:
+
+    private:
+        glm::fvec2 position;
+    };
+
+}
+
 
 
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 int main(int argc, char** argv) {
-    // code without checking for errors
-    SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-    SDL_Window *window = SDL_CreateWindow(
-        "[glad] GL with SDL",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        WIDTH, HEIGHT,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-    );
-
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-
-    int version = gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress);
-    printf("GL %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-
+    nether::SDLContext ctx;
     int exit = 0;
     while(!exit) {
         SDL_Event event;
@@ -49,11 +95,9 @@ int main(int argc, char** argv) {
             }
         }
 
-        glClearColor(0.7f, 0.9f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        ctx.BeginRender();
 
-        SDL_GL_SwapWindow(window);
-        SDL_Delay(1);
+
     }
 
     SDL_GL_DeleteContext(context);
