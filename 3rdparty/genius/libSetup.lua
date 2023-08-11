@@ -22,11 +22,12 @@ end
 function defineStaticLib(name, buildPath, targetDir, ignoreWarnings)
 	project (name)
 	location (buildPath)
+	objdir(buildPath)
 	kind "StaticLib"
 	language "C"
 	configurations { "debug", "release" }
 	platforms { "x32", "x64" }
-	targetdir (targetDir)
+	targetdir (buildPath)
 	commonFlags()
 	if ignoreWarnings == true then
 		flags(

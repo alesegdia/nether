@@ -9,12 +9,14 @@ defineSDLImageLib(
 	"3rdparty/sdl-image",
 	"3rdparty/sdl",
 	"3rdparty/libpng",
-	"3rdparty/zlib"
+	"3rdparty/zlib",
+	"build"
 )
 
 defineLibPNGLib(
 	"3rdparty/libpng",
-	"3rdparty/zlib")
+	"3rdparty/zlib",
+	"build")
 
 defineZLib("3rdparty/zlib", "build")
 
@@ -26,6 +28,9 @@ function netherProject(projectName)
 	platforms { "x32", "x64" }
 	defines { "GLAD_GL_IMPLEMENTATION" }
 	flags{ "CppLatest" }
+	objdir("build")
+	targetdir("build")
+	debugdir(".")
 
 	configuration {}
 		links {

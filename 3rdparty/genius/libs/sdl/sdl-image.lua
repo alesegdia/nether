@@ -1,6 +1,6 @@
 
-function defineSDLImageLib(baseDir, sdlBaseDir, libpngBaseDir, zlibBaseDir)
-	defineStaticLib("sdl-image", ".", ".", true)
+function defineSDLImageLib(baseDir, sdlBaseDir, libpngBaseDir, zlibBaseDir, buildPath)
+	defineStaticLib("sdl-image", buildPath, ".", true)
 
 	configuration {}
 	

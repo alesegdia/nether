@@ -8,11 +8,11 @@ function copyFile(inFile, outFile)
     outfile:close()
 end
 
-function defineLibPNGLib(baseDir, zlibBaseDir)
+function defineLibPNGLib(baseDir, zlibBaseDir, buildPath)
 
 copyFile(path.join(baseDir, "scripts/pnglibconf.h.prebuilt"), path.join(baseDir, "pnglibconf.h"))
 
-defineStaticLib("libpng", ".", ".", true)
+defineStaticLib("libpng", buildPath, ".", true)
 
 	configuration {}
 	
