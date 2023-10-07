@@ -13,6 +13,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace nether
 {
 
@@ -120,7 +123,38 @@ namespace nether
 
 	};
 
+    class Texture
+    {
+    public:
+        Texture(const char* filePath)
+        {
+            int w, h, comp;
+            m_data = stbi_load(filePath, &w, &h, &comp, 0);
 
+            if (IsValid())
+            {
+                glGenTextures(1, &m_texture);
+                glBindTexture(GL_TEXTURE_2D, m_texture);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+                stbi_image_free(m_data);
+            }
+        }
+
+        bool IsValid()
+        {
+            return m_data != nullptr;
+        }
+
+    private:
+        unsigned char* m_data;
+        unsigned int m_texture;
+
+    };
 
     enum ShaderType : GLenum
     {

@@ -52,7 +52,9 @@ function netherProject(projectName)
 			"3rdparty/glad/include",
 			"3rdparty/glm",
 			"module/rztl/include",
-			sdlIncludeDirs("3rdparty/sdl")
+			sdlIncludeDirs("3rdparty/sdl"),
+			"3rdparty/sdl-image/include",
+			"3rdparty/stb",
 		}
 
 		files {
