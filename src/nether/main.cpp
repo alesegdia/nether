@@ -8,8 +8,8 @@
 #include <sstream>
 
 #include <glad/gl.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -251,10 +251,8 @@ namespace nether
 
             window = SDL_CreateWindow(
                 "[glad] GL with SDL",
-                SDL_WINDOWPOS_CENTERED,
-                SDL_WINDOWPOS_CENTERED,
                 width, height,
-                SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+                SDL_WINDOW_OPENGL
             );
 
             context = SDL_GL_CreateContext(window);
@@ -476,10 +474,10 @@ int main(int argc, char** argv) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch(event.type) {
-                case SDL_QUIT:
+                case SDL_EVENT_QUIT:
                     exit = 1;
                     break;
-                case SDL_KEYUP:
+                case SDL_EVENT_KEY_UP:
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         exit = 1;
                     }

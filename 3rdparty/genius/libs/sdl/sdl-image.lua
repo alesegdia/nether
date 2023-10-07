@@ -16,6 +16,16 @@ function defineSDLImageLib(baseDir, sdlBaseDir, libpngBaseDir, zlibBaseDir, buil
 		path.join(baseDir, "include"),
 	}
 
+	links {
+		"libpng",
+		"sdl",
+		"zlib",
+		"imm32",
+		"winmm",
+		"version",
+		"setupapi",
+	}
+
 	files {
 		path.join(baseDir, "src/IMG.c"),
 		path.join(baseDir, "src/IMG_WIC.c"),

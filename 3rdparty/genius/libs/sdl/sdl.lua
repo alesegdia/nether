@@ -1,8 +1,8 @@
 
 dofile("sdl-files.lua")
 
-function defineSDLLib(baseDir, buildPath)
-	defineStaticLib("sdl", buildPath, ".", true)
+function defineSDLLib(static, baseDir, buildPath)
+	defineLib(static, "sdl", buildPath, ".", true)
 
 		includedirs {
 			sdlIncludeDirs(baseDir)
@@ -13,32 +13,29 @@ function defineSDLLib(baseDir, buildPath)
 		}
 
 		links {
-
 			"kernel32",
-"user32",
-"gdi32",
-"winmm",
-"imm32",
-"ole32",
-"oleaut32",
-"version",
-"uuid",
-"advapi32",
-"setupapi",
-"shell32",
-"dinput8",
-"kernel32",
-"user32",
-"gdi32",
-"winspool",
-"shell32",
-"ole32",
-"oleaut32",
-"uuid",
-"comdlg32",
-"advapi32",
-
-
+			"user32",
+			"gdi32",
+			"winmm",
+			"imm32",
+			"ole32",
+			"oleaut32",
+			"version",
+			"uuid",
+			"advapi32",
+			"setupapi",
+			"shell32",
+			"dinput8",
+			"kernel32",
+			"user32",
+			"gdi32",
+			"winspool",
+			"shell32",
+			"ole32",
+			"oleaut32",
+			"uuid",
+			"comdlg32",
+			"advapi32",
 		}
 
 		configuration { "vs20*" }

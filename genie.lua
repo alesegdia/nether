@@ -3,7 +3,7 @@ solution("nether")
 
 dofile("3rdparty/genius/genius.lua")
 
-defineSDLLib("3rdparty/sdl", "build")
+defineSDLLib(true, "3rdparty/sdl", "build")
 
 defineSDLImageLib(
 	"3rdparty/sdl-image",
