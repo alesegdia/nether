@@ -21,6 +21,13 @@ defineStaticLib("libpng", buildPath, ".", true)
 		zlibBaseDir,
 	}
 
+	libdirs { "baseDir/../../build"}
+
+	links
+	{
+		"zlib"
+	}
+
 	files {
 		path.join(baseDir, "png.c"),
 		path.join(baseDir, "pngerror.c"),

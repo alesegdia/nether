@@ -23,7 +23,7 @@ function defineStaticLib(name, buildPath, targetDir, ignoreWarnings)
 	project (name)
 	location (buildPath)
 	objdir(buildPath)
-	kind "StaticLib"
+	kind "SharedLib"
 	language "C"
 	configurations { "debug", "release" }
 	platforms { "x32", "x64" }

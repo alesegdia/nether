@@ -12,15 +12,36 @@ function defineSDLLib(baseDir, buildPath)
 			sdlCommonSources(baseDir)
 		}
 
-		configuration { "linux*" }
-			files {
-				sdlLinuxSources(baseDir)
-			}
+		links {
+
+			"kernel32",
+"user32",
+"gdi32",
+"winmm",
+"imm32",
+"ole32",
+"oleaut32",
+"version",
+"uuid",
+"advapi32",
+"setupapi",
+"shell32",
+"dinput8",
+"kernel32",
+"user32",
+"gdi32",
+"winspool",
+"shell32",
+"ole32",
+"oleaut32",
+"uuid",
+"comdlg32",
+"advapi32",
+
+
+		}
 
 		configuration { "vs20*" }
-			files {
-				sdlWinSources(baseDir)
-			}
 			defines {
 				"SDL_VIDEO_DRIVER_DUMMY",
 				"SDL_AUDIO_DRIVER_DUMMY",
@@ -29,8 +50,4 @@ function defineSDLLib(baseDir, buildPath)
 				"HAVE_LIBC",
 			}
 
-		configuration { "mingw*" }
-			files {
-				sdlMingwSources(baseDir)
-			}
 end
