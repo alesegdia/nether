@@ -16,13 +16,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <rztl/rztl.h>
+
 namespace nether
 {
 
     struct Color
     {
+        static const Color White;
+
         float r, g, b, a;
     };
+
+    inline constexpr Color Color::White(1.0f, 1.0f, 1.0f, 1.0f);
+
     
     enum class BufferBindingTarget : GLenum
     {
@@ -268,8 +275,6 @@ namespace nether
 
     };
 
-
-
     class SDLContext
     {
     public:
@@ -371,6 +376,80 @@ namespace nether
     class Material
     {
     public:
+
+    };
+
+    struct Rect
+    {
+        glm::ivec2 origin;
+        glm::ivec2 size;
+
+        bool operator==(const Rect& other)
+        {
+            return origin == other.origin &&
+                   size   == other.size;
+        }
+    };
+
+    struct Vertex
+    {
+        Vertex(const glm::fvec2& pPosition)
+            : position(pPosition)
+        {
+
+        }
+
+        Vertex(const glm::fvec2& pPosition, const Color& pColor)
+            : position(pPosition),
+              color(pColor)
+        {
+
+        }
+
+        Vertex(const glm::fvec2& pPosition, const glm::fvec2& pTexCoords)
+            : position(pPosition),
+              texCoords(pTexCoords)
+        {
+
+        }
+
+        Vertex(const glm::fvec2& pPosition, const glm::fvec2& pTexCoords, const Color& pColor)
+            : position(pPosition),
+              texCoords(pTexCoords),
+              color(pColor)
+        {
+
+        }
+
+
+        glm::fvec2 position {0,0};
+        Color color { Color::White };
+        glm::fvec2 texCoords {0,0};
+    };
+
+    class Sprite
+    {
+    public:
+        Sprite(const std::shared_ptr<Texture>& texture, const Rect& rect)
+        {
+            SetTextureRect(rect);
+
+        }
+
+    private:
+        void SetTextureRect(const Rect& rect)
+        {
+            if (rect != m_textureRect)
+            {
+                m_textureRect = rect;
+                updatePositions();
+                updateTexCoords();
+            }
+        }
+
+        std::shared_ptr<Texture> m_texture;
+        Vertex m_vertices[4];
+        Rect m_textureRect;
 
     };
 
@@ -499,6 +578,15 @@ int main(int argc, char** argv) {
 	nether::Renderable renderable;
 	renderable.SetVertices(verticesRect);
     renderable.Generate();
+
+    float vertices[] = {
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+    };
+
 
     nether::ShaderProgram program;
     program.Load("assets/vertexShader.vert", "assets/fragmentShader.frag");

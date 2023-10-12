@@ -59,7 +59,8 @@ function netherProject(projectName)
 
 		files {
 			"src/**/*.h",
-			"src/**/*.cpp"
+			"src/**/*.cpp",
+			"module/rztl/include/**/*.*"
 		}
 
 	-- https://support.microsoft.com/es-es/help/154753/description-of-the-default-c-and-c-libraries-that-a-program-will-link
