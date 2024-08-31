@@ -1,12 +1,3 @@
-// gcc example/c/gl_sdl2.c build/src/gl.c -Ibuild/include `sdl2-config --libs --cflags` -ldl
-#include <stdlib.h>
-#include <stdio.h>
-
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
 #include <glad/gl.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
@@ -30,7 +21,7 @@ namespace nether
 
     inline constexpr Color Color::White(1.0f, 1.0f, 1.0f, 1.0f);
 
-    
+
     enum class BufferBindingTarget : GLenum
     {
         ArrayBuffer = GL_ARRAY_BUFFER,
@@ -62,28 +53,28 @@ namespace nether
             bufferBindingTarget = pBufferBindingTarget;
         }
 
-		void UploadBufferData(std::vector<glm::fvec3> vec3s)
-		{
+        void UploadBufferData(std::vector<glm::fvec3> vec3s)
+        {
             UploadBufferData(&vec3s[0].x, vec3s.size() * 3);
-		}
+        }
 
-		void UploadBufferData(float* items, int num)
-		{
-			glBufferData(static_cast<GLenum>(bufferBindingTarget), num, items, GLenum(bufferUsage));
-		}
+        void UploadBufferData(float* items, int num)
+        {
+            glBufferData(static_cast<GLenum>(bufferBindingTarget), num, items, GLenum(bufferUsage));
+        }
 
         void Bind()
         {
-			glBindBuffer(static_cast<GLenum>(bufferBindingTarget), vbo);
+            glBindBuffer(static_cast<GLenum>(bufferBindingTarget), vbo);
         }
 
         void Unbind()
         {
-			glBindBuffer(static_cast<GLenum>(bufferBindingTarget), 0);
+            glBindBuffer(static_cast<GLenum>(bufferBindingTarget), 0);
         }
 
     private:
-		BufferUsage bufferUsage = BufferUsage::StaticDraw;
+        BufferUsage bufferUsage = BufferUsage::StaticDraw;
         BufferBindingTarget bufferBindingTarget = BufferBindingTarget::ArrayBuffer;
         unsigned int vbo;
 
@@ -102,12 +93,12 @@ namespace nether
         False = GL_FALSE
     };
 
-	class VertexArrayObject
-	{
-	public:
+    class VertexArrayObject
+    {
+    public:
         void Generate()
         {
-			glGenVertexArrays(1, &VAO);
+            glGenVertexArrays(1, &VAO);
         }
 
         void AddVertexAttribPointer(unsigned int index, int size, GLType type, GLBoolean normalized, GLsizei stride, GLvoid* pointer)
@@ -128,7 +119,7 @@ namespace nether
     private:
         unsigned int VAO;
 
-	};
+    };
 
     class Texture
     {
@@ -174,12 +165,12 @@ namespace nether
     public:
         void Load(std::string filePath, ShaderType shaderType)
         {
-			std::ifstream t(filePath);
-			std::stringstream buffer;
-			buffer << t.rdbuf();
+            std::ifstream t(filePath);
+            std::stringstream buffer;
+            buffer << t.rdbuf();
             auto contents = buffer.str();
             const char* shaderStr = contents.c_str();
-        
+
             shader = glCreateShader(GLenum(shaderType));
             glShaderSource(shader, 1, &shaderStr, NULL);
             glCompileShader(shader);
@@ -187,14 +178,14 @@ namespace nether
             int success = 0;
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success)
-			{
-				char infoLog[512];
+            {
+                char infoLog[512];
                 glGetShaderInfoLog(shader, 512, NULL, infoLog);
-				std::cout << "Shader " << filePath << " compilation failed : " << infoLog << std::endl;
+                std::cout << "Shader " << filePath << " compilation failed : " << infoLog << std::endl;
             }
             else
             {
-				std::cout << "Shader " << filePath << " compilation success!" << std::endl;
+                std::cout << "Shader " << filePath << " compilation success!" << std::endl;
             }
         }
 
@@ -203,10 +194,10 @@ namespace nether
             return shader;
         }
 
-		void Clean()
-		{
+        void Clean()
+        {
             glDeleteShader(shader);
-		}
+        }
 
     private:
         unsigned int shader;
@@ -219,56 +210,56 @@ namespace nether
 
         void Load(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
         {
-			nether::Shader vertexShader, fragmentShader;
-			vertexShader.Load(vertexShaderFile, nether::ShaderType::VertexShader);
-			fragmentShader.Load(fragmentShaderFile, nether::ShaderType::FragmentShader);
-			Load(vertexShader, fragmentShader);
-			vertexShader.Clean();
-			fragmentShader.Clean();
+            nether::Shader vertexShader, fragmentShader;
+            vertexShader.Load(vertexShaderFile, nether::ShaderType::VertexShader);
+            fragmentShader.Load(fragmentShaderFile, nether::ShaderType::FragmentShader);
+            Load(vertexShader, fragmentShader);
+            vertexShader.Clean();
+            fragmentShader.Clean();
         }
 
         void Load(Shader vertexShader, Shader fragmentShader)
         {
             shaderProgram = glCreateProgram();
-			glAttachShader(shaderProgram, vertexShader.GetShaderObject());
-			glAttachShader(shaderProgram, fragmentShader.GetShaderObject());
+            glAttachShader(shaderProgram, vertexShader.GetShaderObject());
+            glAttachShader(shaderProgram, fragmentShader.GetShaderObject());
             glLinkProgram(shaderProgram);
 
-			int success = 0;
-			glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-			if (!success) {
-				char infoLog[512];
-				glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+            int success = 0;
+            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+            if (!success) {
+                char infoLog[512];
+                glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
                 std::cout << "=================================================" << std::endl
                     << "Shader program linking failed: " << std::endl
                     << infoLog << std::endl
                     << "=================================================" << std::endl;
-			}
+            }
             else
             {
-				std::cout << "Shader linking success!" << std::endl;
+                std::cout << "Shader linking success!" << std::endl;
             }
         }
 
-		void Use()
-		{
-			glUseProgram(shaderProgram);
-		}
+        void Use()
+        {
+            glUseProgram(shaderProgram);
+        }
 
-		void Unbind()
-		{
-			glUseProgram(0);
-		}
+        void Unbind()
+        {
+            glUseProgram(0);
+        }
 
-		bool operator==(const ShaderProgram& other)
-		{
-			return shaderProgram == other.shaderProgram;
-		}
+        bool operator==(const ShaderProgram& other)
+        {
+            return shaderProgram == other.shaderProgram;
+        }
 
-		bool operator!=(const ShaderProgram& other)
-		{
-			return shaderProgram != other.shaderProgram;
-		}
+        bool operator!=(const ShaderProgram& other)
+        {
+            return shaderProgram != other.shaderProgram;
+        }
 
     private:
         unsigned int shaderProgram;
@@ -336,9 +327,9 @@ namespace nether
     };
 
 
-	class Renderable
-	{
-	public:
+    class Renderable
+    {
+    public:
         void SetVertices(std::vector<glm::fvec3> pvertices)
         {
             vertices = pvertices;
@@ -346,32 +337,32 @@ namespace nether
 
         void Generate()
         {
-			vbo.SetBufferBindingTarget(nether::BufferBindingTarget::ArrayBuffer);
-			vbo.SetBufferUsage(nether::BufferUsage::StaticDraw);
+            vbo.SetBufferBindingTarget(nether::BufferBindingTarget::ArrayBuffer);
+            vbo.SetBufferUsage(nether::BufferUsage::StaticDraw);
 
-			vbo.Generate();
-			vao.Generate();
+            vbo.Generate();
+            vao.Generate();
 
-			vao.Bind();
-			vbo.Bind();
+            vao.Bind();
+            vbo.Bind();
 
-			vbo.UploadBufferData(&vertices[0].x, sizeof(float) * vertices.size() * 3);
-			vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
-			vao.EnableVertexAttribArray(0);
+            vbo.UploadBufferData(&vertices[0].x, sizeof(float) * vertices.size() * 3);
+            vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
+            vao.EnableVertexAttribArray(0);
         }
 
         void Render()
         {
-			vao.Bind();
+            vao.Bind();
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         }
 
-	private:
-		VertexArrayObject vao;
-		BufferObject vbo;
+    private:
+        VertexArrayObject vao;
+        BufferObject vbo;
         std::vector<glm::fvec3> vertices;
 
-	};
+    };
 
     class Material
     {
@@ -387,7 +378,7 @@ namespace nether
         bool operator==(const Rect& other)
         {
             return origin == other.origin &&
-                   size   == other.size;
+                size == other.size;
         }
     };
 
@@ -401,30 +392,34 @@ namespace nether
 
         Vertex(const glm::fvec2& pPosition, const Color& pColor)
             : position(pPosition),
-              color(pColor)
+            color(pColor)
         {
 
         }
 
         Vertex(const glm::fvec2& pPosition, const glm::fvec2& pTexCoords)
             : position(pPosition),
-              texCoords(pTexCoords)
+            texCoords(pTexCoords)
         {
 
         }
 
         Vertex(const glm::fvec2& pPosition, const glm::fvec2& pTexCoords, const Color& pColor)
             : position(pPosition),
-              texCoords(pTexCoords),
-              color(pColor)
+            texCoords(pTexCoords),
+            color(pColor)
         {
 
         }
 
+        Vertex()
+        {
 
-        glm::fvec2 position {0,0};
-        Color color { Color::White };
-        glm::fvec2 texCoords {0,0};
+        }
+
+        glm::fvec2 position{ 0,0 };
+        Color color{ Color::White };
+        glm::fvec2 texCoords{ 0,0 };
     };
 
     class Sprite
@@ -442,8 +437,8 @@ namespace nether
             if (rect != m_textureRect)
             {
                 m_textureRect = rect;
-                updatePositions();
-                updateTexCoords();
+                // updatePositions();
+                // updateTexCoords();
             }
         }
 
@@ -547,82 +542,80 @@ namespace nether
     };
 
 
-}
+    class TestApp
+    {
+    public:
+        TestApp(int windowWidth = 800, int windowHeight = 600)
+            : m_windowWidth(windowWidth)
+            , m_windowHeight(windowHeight)
+        {
 
-
-const GLuint WIDTH = 800, HEIGHT = 600;
-
-int main(int argc, char** argv) {
-
-	nether::SDLContext ctx;
-	nether::Renderer renderer;
-    ctx.Init(800, 600);
-
-	std::vector<glm::fvec3> verticesTriangle{
-	{ -0.5f, -0.5f,  0.0f },
-	{  0.5f, -0.5f,  0.0f },
-	{  0.0f,  0.5f,  0.0f },
-
-	};
-
-	std::vector<glm::fvec3> verticesRect{
-    { 0.5f,  0.5f, 0.0f},  // top right
-    { 0.5f, -0.5f, 0.0f},  // bottom right
-    {-0.5f,  0.5f, 0.0f},  // top left 
-    // second triangle
-     {0.5f, -0.5f, 0.0f},  // bottom right
-    {-0.5f, -0.5f, 0.0f},  // bottom left
-    {-0.5f,  0.5f, 0.0f}   // top left
-	};
-
-	nether::Renderable renderable;
-	renderable.SetVertices(verticesRect);
-    renderable.Generate();
-
-    float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-    };
-
-
-    nether::ShaderProgram program;
-    program.Load("assets/vertexShader.vert", "assets/fragmentShader.frag");
-
-    int exit = 0;
-    while(!exit) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch(event.type) {
-                case SDL_EVENT_QUIT:
-                    exit = 1;
-                    break;
-                case SDL_EVENT_KEY_UP:
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
-                        exit = 1;
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
-        renderer.SetRendererClearColor({ 0.f, 1.f, 0.5f, 1.0f });
-        renderer.SetColorBufferBit(true);
+        virtual ~TestApp() {}
+        
+        virtual void Step(float delta) = 0;
+        virtual void Init() = 0;
+        virtual void Cleanup() = 0;
 
-        renderer.BeginRender();
-        renderer.UseProgramShader(program);
+        void Run()
+        {
+            m_ctx.Init(800, 600);
 
-        renderable.Render();
+            Init();
 
-        renderer.EndRender();
+            int exit = 0;
+            uint64_t ticks = SDL_GetTicks();
 
-        ctx.EndFrame();
-    }
+            while (!exit) {
+                SDL_Event event;
+                while (SDL_PollEvent(&event)) {
+                    switch (event.type) {
+                    case SDL_EVENT_QUIT:
+                        exit = 1;
+                        break;
+                    case SDL_EVENT_KEY_UP:
+                        if (event.key.keysym.sym == SDLK_ESCAPE) {
+                            exit = 1;
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                }
 
-    ctx.Cleanup();
+                auto currentTicks = SDL_GetTicks();
+                float delta = currentTicks - ticks;
+                Step(float(delta));
+                ticks = currentTicks;
 
-    return 0;
+                m_ctx.EndFrame();
+            }
+
+            Cleanup();
+            m_ctx.Cleanup();
+        }
+
+    protected:
+        nether::SDLContext& GetCtx()
+        {
+            return m_ctx;
+        }
+
+        nether::Renderer& GetRenderer()
+        {
+            return m_renderer;
+        }
+
+
+    private:
+        nether::SDLContext m_ctx;
+        nether::Renderer m_renderer;
+        int m_windowWidth = 0;
+        int m_windowHeight = 0;
+
+
+    };
+
 }
+

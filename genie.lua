@@ -3,6 +3,7 @@ solution("nether")
 
 dofile("3rdparty/genius/genius.lua")
 
+group "3rdparty"
 defineSDLLib(true, "3rdparty/sdl", "build")
 
 defineSDLImageLib(
@@ -58,8 +59,10 @@ function netherProject(projectName)
 		}
 
 		files {
-			"src/**/*.h",
-			"src/**/*.cpp",
+			"src/nether/**/*.h",
+			"src/nether/**/*.cpp",
+			"src/nether/*.h",
+			"src/nether/*.cpp",
 			"module/rztl/include/**/*.*"
 		}
 
@@ -91,4 +94,17 @@ function netherProject(projectName)
 	configuration {}
 end
 
-netherProject("nether")
+function netherTest(folderName)
+	netherProject(folderName)
+		configuration{}
+			files {
+				"src/tests/" .. folderName .. "/*.h",
+				"src/tests/" .. folderName .. "/*.cpp",
+			}
+			includedirs {
+				"src/tests/" .. folderName .. "/",
+			}
+end
+
+group("tests")
+netherTest("sample")
