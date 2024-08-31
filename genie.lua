@@ -107,4 +107,6 @@ function netherTest(folderName)
 end
 
 group("tests")
+
 netherTest("sample")
+netherTest("hello-triangle")

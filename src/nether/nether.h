@@ -189,6 +189,28 @@ namespace nether
             }
         }
 
+        void LoadCode(std::string code, ShaderType shaderType)
+        {
+            const char* shaderStr = code.c_str();
+
+            shader = glCreateShader(GLenum(shaderType));
+            glShaderSource(shader, 1, &shaderStr, NULL);
+            glCompileShader(shader);
+
+            int success = 0;
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                char infoLog[512];
+                glGetShaderInfoLog(shader, 512, NULL, infoLog);
+                std::cout << "Shader with direct code compilation failed : " << infoLog << std::endl;
+            }
+            else
+            {
+                std::cout << "Shader with direct code compilation success!" << std::endl;
+            }
+        }
+
         unsigned int GetShaderObject()
         {
             return shader;
@@ -213,6 +235,16 @@ namespace nether
             nether::Shader vertexShader, fragmentShader;
             vertexShader.Load(vertexShaderFile, nether::ShaderType::VertexShader);
             fragmentShader.Load(fragmentShaderFile, nether::ShaderType::FragmentShader);
+            Load(vertexShader, fragmentShader);
+            vertexShader.Clean();
+            fragmentShader.Clean();
+        }
+
+        void LoadFromRawStrings(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+        {
+            nether::Shader vertexShader, fragmentShader;
+            vertexShader.LoadCode(vertexShaderCode, nether::ShaderType::VertexShader);
+            fragmentShader.LoadCode(fragmentShaderCode, nether::ShaderType::FragmentShader);
             Load(vertexShader, fragmentShader);
             vertexShader.Clean();
             fragmentShader.Clean();
