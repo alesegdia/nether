@@ -57,15 +57,16 @@ public:
             1, 2, 3   // second Triangle
         };
 
-        renderable.SetVerticesVec3(vertices, 12);
-        renderable.SetIndicesVec3(indices, 6);
+        renderable.SetVerticesVec3(vertices, 4);
+        renderable.SetIndicesVec3(indices, 2);
         renderable.Generate();
 
     }
 
     virtual void Cleanup() override
     {
-
+        renderable.Cleanup();
+        program.Delete();
     }
 
 private:

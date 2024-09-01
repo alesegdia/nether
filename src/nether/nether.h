@@ -67,22 +67,10 @@ namespace nether
             bufferBindingTarget = pBufferBindingTarget;
         }
 
-        /*
-        void UploadBufferData(std::vector<glm::fvec3> vec3s)
-        {
-            UploadBufferData(&vec3s[0].x, vec3s.size() * 3 * sizeof(float));
-        }
-
-        void UploadBufferData(std::vector<glm::ivec3> vec3s)
-        {
-            UploadBufferData(&vec3s[0].x, vec3s.size() * 3 * sizeof(int));
-        }
-        */
-
         template <typename T>
-        void UploadBufferData(T* items, int num)
+        void UploadBufferData(const std::vector<T>& items)
         {
-            glBufferData(static_cast<GLenum>(bufferBindingTarget), num, items, GLenum(bufferUsage));
+            glBufferData(static_cast<GLenum>(bufferBindingTarget), sizeof(T) * items.size(), items.data(), GLenum(bufferUsage));
         }
 
         void Bind()
@@ -93,6 +81,11 @@ namespace nether
         void Unbind()
         {
             glBindBuffer(static_cast<GLenum>(bufferBindingTarget), 0);
+        }
+        
+        void Delete()
+        {
+            glDeleteBuffers(1, &vbo);
         }
 
     private:
@@ -138,10 +131,19 @@ namespace nether
             glEnableVertexAttribArray(index);
         }
 
+        void Delete()
+        {
+            glDeleteVertexArrays(2, &VAO);
+        }
+
     private:
         unsigned int VAO;
 
     };
+
+
+
+
 
 
     class Texture
@@ -316,6 +318,11 @@ namespace nether
             return shaderProgram != other.shaderProgram;
         }
 
+        void Delete()
+        {
+            glDeleteProgram(shaderProgram);
+        }
+
     private:
         unsigned int shaderProgram;
 
@@ -391,7 +398,7 @@ namespace nether
     public:
         void SetVertices(std::vector<glm::fvec3> pvertices)
         {
-            //vertices = pvertices;
+            vertices = pvertices;
         }
 
         void SetVerticesVec3(float* elements, int numElements)
@@ -399,7 +406,10 @@ namespace nether
             vertices.clear();
             for (int i = 0; i < numElements; i++)
             {
-                vertices.push_back(elements[i]);
+                int offset = i * 3;
+                vertices.push_back({ elements[offset + 0],
+                                     elements[offset + 1],
+                                     elements[offset + 2] });
             }
         }
 
@@ -408,7 +418,10 @@ namespace nether
             indices.clear();
             for (int i = 0; i < numElements; i++)
             {
-                indices.push_back(elements[i]);
+                int offset = i * 3;
+                indices.push_back({ elements[offset + 0],
+                                    elements[offset + 1],
+                                    elements[offset + 2] });
             }
         }
 
@@ -427,10 +440,10 @@ namespace nether
             vao.Bind();
 
             vbo.Bind();
-            vbo.UploadBufferData(vertices.data(), sizeof(float) * vertices.size());
+            vbo.UploadBufferData(vertices);
 
             ebo.Bind();
-            ebo.UploadBufferData(indices.data(), sizeof(int) * indices.size());
+            ebo.UploadBufferData(indices);
 
             vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
             vao.EnableVertexAttribArray(0);
@@ -439,19 +452,25 @@ namespace nether
             glBindVertexArray(0);
         }
 
+        void Cleanup()
+        {
+            vao.Delete();
+            vbo.Delete();
+            ebo.Delete();
+        }
+
         void Render()
         {
             vao.Bind();
             glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, 0);
-            // glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         }
 
     private:
         VertexArrayObject vao;
         BufferObject vbo;
         BufferObject ebo;
-        std::vector<float> vertices;
-        std::vector<unsigned int> indices;
+        std::vector<glm::fvec3> vertices;
+        std::vector<glm::uvec3> indices;
 
     };
 
@@ -601,6 +620,16 @@ namespace nether
             currentShaderProgramInUse.Unbind();
         }
 
+        void SetWireframeMode()
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+
+        void SetFillMode()
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
 
     private:
 
@@ -668,6 +697,12 @@ namespace nether
                     case SDL_EVENT_KEY_UP:
                         if (event.key.keysym.sym == SDLK_ESCAPE) {
                             exit = 1;
+                        }
+                        if (event.key.keysym.sym == SDLK_w) {
+                            GetRenderer().SetWireframeMode();
+                        }
+                        if (event.key.keysym.sym == SDLK_q) {
+                            GetRenderer().SetFillMode();
                         }
                         break;
                     default:
