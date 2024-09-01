@@ -10,12 +10,13 @@
 
 #include <nether/nether.h>
 
+
 class SampleTest : public nether::TestApp
 {
 public:
     virtual void Step(float delta) override
     {
-        GetRenderer().SetRendererClearColor({0.f, 1.f, 0.5f, 1.0f});
+        GetRenderer().SetRendererClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
         GetRenderer().SetColorBufferBit(true);
 
         GetRenderer().BeginRender();
@@ -28,28 +29,38 @@ public:
 
     virtual void Init() override
     {
-        verticesTriangle = {
-        { -0.5f, -0.5f,  0.0f },
-        {  0.5f, -0.5f,  0.0f },
-        {  0.0f,  0.5f,  0.0f },
+        const char* vertexShaderSource = "#version 330 core\n"
+            "layout (location = 0) in vec3 aPos;\n"
+            "void main()\n"
+            "{\n"
+            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+            "}\0";
 
+        const char* fragmentShaderSource = "#version 330 core\n"
+            "out vec4 FragColor;\n"
+            "void main()\n"
+            "{\n"
+            "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+            "}\n\0";
+
+        program.LoadFromRawStrings(vertexShaderSource, fragmentShaderSource);
+
+        float vertices[] = {
+             0.5f,  0.5f, 0.0f,  // top right
+             0.5f, -0.5f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f,  // bottom left
+            -0.5f,  0.5f, 0.0f   // top left 
         };
 
-        verticesRect = {
-            { 0.5f,  0.5f, 0.0f},  // top right
-            { 0.5f, -0.5f, 0.0f},  // bottom right
-            {-0.5f,  0.5f, 0.0f},  // top left 
-            // second triangle
-             {0.5f, -0.5f, 0.0f},  // bottom right
-            {-0.5f, -0.5f, 0.0f},  // bottom left
-            {-0.5f,  0.5f, 0.0f}   // top left
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1, 3,  // first Triangle
+            1, 2, 3   // second Triangle
         };
 
-        renderable.SetVertices(verticesRect);
+        renderable.SetVerticesVec3(vertices, 12);
+        renderable.SetIndicesVec3(indices, 6);
         renderable.Generate();
 
-
-        program.Load("assets/vertexShader.vert", "assets/fragmentShader.frag");
     }
 
     virtual void Cleanup() override
@@ -58,11 +69,8 @@ public:
     }
 
 private:
-    std::vector<glm::fvec3> verticesTriangle;
-    std::vector<glm::fvec3> verticesRect;
     nether::Renderable renderable;
     nether::ShaderProgram program;
-    float vertices[32];
 
 };
 

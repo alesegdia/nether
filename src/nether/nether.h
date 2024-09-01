@@ -9,6 +9,20 @@
 
 #include <rztl/rztl.h>
 
+void GLAPIENTRY
+MessageCallback(GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const GLchar* message,
+    const void* userParam)
+{
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message);
+}
+
 namespace nether
 {
 
@@ -53,12 +67,20 @@ namespace nether
             bufferBindingTarget = pBufferBindingTarget;
         }
 
+        /*
         void UploadBufferData(std::vector<glm::fvec3> vec3s)
         {
-            UploadBufferData(&vec3s[0].x, vec3s.size() * 3);
+            UploadBufferData(&vec3s[0].x, vec3s.size() * 3 * sizeof(float));
         }
 
-        void UploadBufferData(float* items, int num)
+        void UploadBufferData(std::vector<glm::ivec3> vec3s)
+        {
+            UploadBufferData(&vec3s[0].x, vec3s.size() * 3 * sizeof(int));
+        }
+        */
+
+        template <typename T>
+        void UploadBufferData(T* items, int num)
         {
             glBufferData(static_cast<GLenum>(bufferBindingTarget), num, items, GLenum(bufferUsage));
         }
@@ -120,6 +142,7 @@ namespace nether
         unsigned int VAO;
 
     };
+
 
     class Texture
     {
@@ -322,6 +345,10 @@ namespace nether
             int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
             printf("GL %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
 
+            // During init, enable debug output
+            glEnable(GL_DEBUG_OUTPUT);
+            glDebugMessageCallback(MessageCallback, 0);
+
         }
 
         void EndFrame()
@@ -364,7 +391,25 @@ namespace nether
     public:
         void SetVertices(std::vector<glm::fvec3> pvertices)
         {
-            vertices = pvertices;
+            //vertices = pvertices;
+        }
+
+        void SetVerticesVec3(float* elements, int numElements)
+        {
+            vertices.clear();
+            for (int i = 0; i < numElements; i++)
+            {
+                vertices.push_back(elements[i]);
+            }
+        }
+
+        void SetIndicesVec3(unsigned int* elements, int numElements)
+        {
+            indices.clear();
+            for (int i = 0; i < numElements; i++)
+            {
+                indices.push_back(elements[i]);
+            }
         }
 
         void Generate()
@@ -372,27 +417,41 @@ namespace nether
             vbo.SetBufferBindingTarget(nether::BufferBindingTarget::ArrayBuffer);
             vbo.SetBufferUsage(nether::BufferUsage::StaticDraw);
 
-            vbo.Generate();
+            ebo.SetBufferBindingTarget(nether::BufferBindingTarget::ElementArrayBuffer);
+            ebo.SetBufferUsage(nether::BufferUsage::StaticDraw);
+
             vao.Generate();
+            vbo.Generate();
+            ebo.Generate();
 
             vao.Bind();
-            vbo.Bind();
 
-            vbo.UploadBufferData(&vertices[0].x, sizeof(float) * vertices.size() * 3);
+            vbo.Bind();
+            vbo.UploadBufferData(vertices.data(), sizeof(float) * vertices.size());
+
+            ebo.Bind();
+            ebo.UploadBufferData(indices.data(), sizeof(int) * indices.size());
+
             vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
             vao.EnableVertexAttribArray(0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
         }
 
         void Render()
         {
             vao.Bind();
-            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+            glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, 0);
+            // glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         }
 
     private:
         VertexArrayObject vao;
         BufferObject vbo;
-        std::vector<glm::fvec3> vertices;
+        BufferObject ebo;
+        std::vector<float> vertices;
+        std::vector<unsigned int> indices;
 
     };
 
