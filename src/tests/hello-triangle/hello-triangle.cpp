@@ -10,6 +10,81 @@
 
 #include <nether/nether.h>
 
+class Renderable
+{
+public:
+    void SetVertices(std::vector<glm::fvec3> pvertices)
+    {
+        vertices = pvertices;
+    }
+
+    void SetVerticesVec3(float* elements, int numElements)
+    {
+        vertices.clear();
+        for (int i = 0; i < numElements; i++)
+        {
+            int offset = i * 3;
+            vertices.push_back({ elements[offset + 0],
+                                 elements[offset + 1],
+                                 elements[offset + 2] });
+        }
+    }
+
+    void SetIndicesVec3(unsigned int* elements, int numElements)
+    {
+        indices.clear();
+        for (int i = 0; i < numElements; i++)
+        {
+            int offset = i * 3;
+            indices.push_back({ elements[offset + 0],
+                                elements[offset + 1],
+                                elements[offset + 2] });
+        }
+    }
+
+    void Generate()
+    {
+        vao.Generate();
+        vbo.Generate(nether::BufferBindingTarget::ArrayBuffer);
+        ebo.Generate(nether::BufferBindingTarget::ElementArrayBuffer);
+
+        vao.Bind();
+
+        vbo.Bind();
+        vbo.UploadBufferData(vertices);
+
+        ebo.Bind();
+        ebo.UploadBufferData(indices);
+
+        vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
+        vao.EnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    void Cleanup()
+    {
+        vao.Delete();
+        vbo.Delete();
+        ebo.Delete();
+    }
+
+    void Render()
+    {
+        vao.Bind();
+        glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, 0);
+    }
+
+private:
+    nether::VertexArrayObject vao;
+    nether::BufferObject vbo;
+    nether::BufferObject ebo;
+    std::vector<glm::fvec3> vertices;
+    std::vector<glm::uvec3> indices;
+
+};
+
 
 class SampleTest : public nether::TestApp
 {
@@ -70,7 +145,7 @@ public:
     }
 
 private:
-    nether::Renderable renderable;
+    Renderable renderable;
     nether::ShaderProgram program;
 
 };

@@ -15,14 +15,13 @@ class RenderablePosColor
 public:
     void Generate()
     {
-        vbo.SetBufferBindingTarget(nether::BufferBindingTarget::ArrayBuffer);
-        vbo.SetBufferUsage(nether::BufferUsage::StaticDraw);
+        program.Load("src/tests/shaders/media/shader.vs", "src/tests/shaders/media/shader.fs");
 
         vao.Generate();
-        vbo.Generate();
+        vbo.Generate(nether::BufferBindingTarget::ArrayBuffer);
 
         vao.Bind();
-
+         
         std::vector<float> vertices = {
             // positions         // colors
              0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
@@ -33,10 +32,10 @@ public:
         vbo.Bind();
         vbo.UploadBufferData(vertices);
 
-        vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 6 * sizeof(float), (void*)0);
+        vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 6 * sizeof(float), (void*)0 );
         vao.EnableVertexAttribArray(0);
 
-        vao.AddVertexAttribPointer(1, 3, nether::GLType::Float, nether::GLBoolean::False, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        vao.AddVertexAttribPointer(1, 3, nether::GLType::Float, nether::GLBoolean::False, 6 * sizeof(float), (void*)(3 * sizeof(float)) );
         vao.EnableVertexAttribArray(1);
 
         vbo.Unbind();
@@ -47,10 +46,12 @@ public:
     {
         vao.Delete();
         vbo.Delete();
+        program.Delete();
     }
 
     void Render()
     {
+        program.Use();
         vao.Bind();
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
@@ -58,6 +59,7 @@ public:
 private:
     nether::VertexArrayObject vao;
     nether::BufferObject vbo;
+    nether::ShaderProgram program;
 
 };
 
@@ -70,7 +72,6 @@ public:
         GetRenderer().SetColorBufferBit(true);
 
         GetRenderer().BeginRender();
-        GetRenderer().UseProgramShader(program);
 
         renderable.Render();
 
@@ -79,7 +80,6 @@ public:
 
     virtual void Init() override
     {
-        program.Load("src/tests/shader/media/shader.vs", "src/tests/shader/media/shader.fs");
         renderable.Generate();
 
     }
@@ -87,12 +87,10 @@ public:
     virtual void Cleanup() override
     {
         renderable.Cleanup();
-        program.Delete();
     }
 
 private:
-    nether::Renderable renderable;
-    nether::ShaderProgram program;
+    RenderablePosColor renderable;
 
 };
 

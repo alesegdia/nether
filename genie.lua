@@ -110,4 +110,5 @@ group("tests")
 
 netherTest("sample")
 netherTest("hello-triangle")
-netherTest("shader")
+netherTest("shaders")
+netherTest("textures")

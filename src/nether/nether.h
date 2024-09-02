@@ -49,22 +49,53 @@ namespace nether
         DynamicDraw = GL_DYNAMIC_DRAW   // the data is changed a lot and used many times
     };
 
+    enum class TextureUnit : GLenum
+    {
+        Texture0 = GL_TEXTURE0,
+        Texture1 = GL_TEXTURE1,
+        Texture2 = GL_TEXTURE2,
+        Texture3 = GL_TEXTURE3,
+        Texture4 = GL_TEXTURE4,
+        Texture5 = GL_TEXTURE5,
+        Texture6 = GL_TEXTURE6,
+        Texture7 = GL_TEXTURE7,
+        Texture8 = GL_TEXTURE8,
+        Texture9 = GL_TEXTURE9,
+
+        Texture10 = GL_TEXTURE10,
+        Texture11 = GL_TEXTURE11,
+        Texture12 = GL_TEXTURE12,
+        Texture13 = GL_TEXTURE13,
+        Texture14 = GL_TEXTURE14,
+        Texture15 = GL_TEXTURE15,
+        Texture16 = GL_TEXTURE16,
+        Texture17 = GL_TEXTURE17,
+        Texture18 = GL_TEXTURE18,
+        Texture19 = GL_TEXTURE19,
+
+        Texture20 = GL_TEXTURE20,
+        Texture21 = GL_TEXTURE21,
+        Texture22 = GL_TEXTURE22,
+        Texture23 = GL_TEXTURE23,
+        Texture24 = GL_TEXTURE24,
+        Texture25 = GL_TEXTURE25,
+        Texture26 = GL_TEXTURE26,
+        Texture27 = GL_TEXTURE27,
+        Texture28 = GL_TEXTURE28,
+        Texture29 = GL_TEXTURE29,
+
+        Texture30 = GL_TEXTURE30,
+        Texture31 = GL_TEXTURE31,
+    };
+
     class BufferObject
     {
     public:
-        void Generate()
+        void Generate(BufferBindingTarget pBufferBindingTarget, BufferUsage pBufferUsage = BufferUsage::StaticDraw)
         {
+            SetBufferBindingTarget(pBufferBindingTarget);
+            SetBufferUsage(pBufferUsage);
             glGenBuffers(1, &vbo);
-        }
-
-        void SetBufferUsage(BufferUsage pBufferUsage)
-        {
-            bufferUsage = pBufferUsage;
-        }
-
-        void SetBufferBindingTarget(BufferBindingTarget pBufferBindingTarget)
-        {
-            bufferBindingTarget = pBufferBindingTarget;
         }
 
         template <typename T>
@@ -89,6 +120,17 @@ namespace nether
         }
 
     private:
+        void SetBufferUsage(BufferUsage pBufferUsage)
+        {
+            bufferUsage = pBufferUsage;
+        }
+
+        void SetBufferBindingTarget(BufferBindingTarget pBufferBindingTarget)
+        {
+            bufferBindingTarget = pBufferBindingTarget;
+        }
+
+
         BufferUsage bufferUsage = BufferUsage::StaticDraw;
         BufferBindingTarget bufferBindingTarget = BufferBindingTarget::ArrayBuffer;
         unsigned int vbo;
@@ -146,27 +188,83 @@ namespace nether
 
     };
 
+    enum class TextureWrap : GLint
+    {
+        Repeat          = GL_REPEAT,
+        MirroredRepeat  = GL_MIRRORED_REPEAT,
+        ClampToEdge     = GL_CLAMP_TO_EDGE,
+        ClampToBorder   = GL_CLAMP_TO_BORDER,
+    };
+
+    enum class TextureMinFilter : GLint
+    {
+        Nearest              = GL_NEAREST,
+        Linear               = GL_LINEAR,
+        NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
+        LinearMipmapNearest  = GL_LINEAR_MIPMAP_NEAREST,
+        NearestMipmapLinear  = GL_NEAREST_MIPMAP_LINEAR,
+        LinearMipmapLinear   = GL_LINEAR_MIPMAP_LINEAR,
+    };
+
+    enum class TextureMagFilter : GLint
+    {
+        Nearest     = GL_NEAREST,
+        Linear      = GL_LINEAR,
+    };
+
+    enum class Format
+    {
+        RGB8,
+        RGBA8,
+    };
 
     class Texture
     {
     public:
-        Texture(const char* filePath)
-        {
-            int w, h, comp;
-            m_data = stbi_load(filePath, &w, &h, &comp, 0);
 
-            if (IsValid())
+
+
+        int LoadFromFile(const char* filePath, Format format)
+        {
+            stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+
+            int width, height, numChannels;
+            m_data = stbi_load(filePath, &width, &height, &numChannels, 0);
+
+            if (m_data != nullptr)
             {
                 glGenTextures(1, &m_texture);
                 glBindTexture(GL_TEXTURE_2D, m_texture);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_data);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
+
+                switch (format)
+                {
+                case Format::RGB8:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_data);
+                    break;
+                case Format::RGBA8:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_data);
+                    break;
+                }
                 glGenerateMipmap(GL_TEXTURE_2D);
                 stbi_image_free(m_data);
             }
+            else
+            {
+                std::cout << "Failed to load texture.";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        void Bind(nether::TextureUnit texUnit)
+        {
+            glActiveTexture(GLenum(texUnit));
+            glBindTexture(GL_TEXTURE_2D, m_texture);
         }
 
         bool IsValid()
@@ -174,7 +272,33 @@ namespace nether
             return m_data != nullptr;
         }
 
+        void SetXWrap(TextureWrap xWrap)
+        {
+            m_xWrap = xWrap;
+        }
+
+        void SetYWrap(TextureWrap yWrap)
+        {
+            m_yWrap = yWrap;
+        }
+
+        void SetMinFilter(TextureMinFilter minFilter)
+        {
+            m_minFilter = minFilter;
+        }
+
+        void SetMagFilter(TextureMagFilter magFilter)
+        {
+            m_magFilter = magFilter;
+        }
+
     private:
+        TextureWrap m_xWrap = TextureWrap::Repeat;
+        TextureWrap m_yWrap = TextureWrap::Repeat;
+
+        TextureMinFilter m_minFilter = TextureMinFilter::Linear;
+        TextureMagFilter m_magFilter = TextureMagFilter::Linear;
+
         unsigned char* m_data;
         unsigned int m_texture;
 
@@ -393,87 +517,6 @@ namespace nether
 
     };
 
-
-    class Renderable
-    {
-    public:
-        void SetVertices(std::vector<glm::fvec3> pvertices)
-        {
-            vertices = pvertices;
-        }
-
-        void SetVerticesVec3(float* elements, int numElements)
-        {
-            vertices.clear();
-            for (int i = 0; i < numElements; i++)
-            {
-                int offset = i * 3;
-                vertices.push_back({ elements[offset + 0],
-                                     elements[offset + 1],
-                                     elements[offset + 2] });
-            }
-        }
-
-        void SetIndicesVec3(unsigned int* elements, int numElements)
-        {
-            indices.clear();
-            for (int i = 0; i < numElements; i++)
-            {
-                int offset = i * 3;
-                indices.push_back({ elements[offset + 0],
-                                    elements[offset + 1],
-                                    elements[offset + 2] });
-            }
-        }
-
-        void Generate()
-        {
-            vbo.SetBufferBindingTarget(nether::BufferBindingTarget::ArrayBuffer);
-            vbo.SetBufferUsage(nether::BufferUsage::StaticDraw);
-
-            ebo.SetBufferBindingTarget(nether::BufferBindingTarget::ElementArrayBuffer);
-            ebo.SetBufferUsage(nether::BufferUsage::StaticDraw);
-
-            vao.Generate();
-            vbo.Generate();
-            ebo.Generate();
-
-            vao.Bind();
-
-            vbo.Bind();
-            vbo.UploadBufferData(vertices);
-
-            ebo.Bind();
-            ebo.UploadBufferData(indices);
-
-            vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 3 * sizeof(float), (void*)0);
-            vao.EnableVertexAttribArray(0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
-        }
-
-        void Cleanup()
-        {
-            vao.Delete();
-            vbo.Delete();
-            ebo.Delete();
-        }
-
-        void Render()
-        {
-            vao.Bind();
-            glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, 0);
-        }
-
-    private:
-        VertexArrayObject vao;
-        BufferObject vbo;
-        BufferObject ebo;
-        std::vector<glm::fvec3> vertices;
-        std::vector<glm::uvec3> indices;
-
-    };
 
     class Material
     {
