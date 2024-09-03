@@ -34,11 +34,8 @@ public:
         GetRenderer().SetColorBufferBit(true);
 
         GetRenderer().BeginRender();
-        GetRenderer().UseProgramShader(program);
 
         renderable.Render();
-
-        GetRenderer().EndRender();
     }
 
     virtual void Init() override
@@ -75,7 +72,6 @@ public:
 private:
     std::vector<glm::fvec3> verticesTriangle;
     std::vector<glm::fvec3> verticesRect;
-    nether::Renderable renderable;
     nether::ShaderProgram program;
     float vertices[32];
 
