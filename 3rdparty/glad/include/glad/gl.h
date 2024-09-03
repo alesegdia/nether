@@ -16504,6 +16504,8 @@ extern "C" {
 #endif
 
 
+#ifndef __MEH__
+#define __MEH__
 
 int GLAD_GL_VERSION_1_0 = 0;
 int GLAD_GL_VERSION_1_1 = 0;
@@ -47835,6 +47837,8 @@ void gladUninstallGLDebug() {
     glad_debug_glWindowRectanglesEXT = glad_glWindowRectanglesEXT;
     glad_debug_glWriteMaskEXT = glad_glWriteMaskEXT;
 }
+
+#endif
 
 
 #ifdef __cplusplus
