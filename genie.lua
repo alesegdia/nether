@@ -94,8 +94,8 @@ function netherProject(projectName)
 	configuration {}
 end
 
-function netherTest(folderName)
-	netherProject(folderName)
+function netherTest(num, folderName)
+	netherProject(num .. "-" .. folderName)
 		configuration{}
 			files {
 				"src/tests/" .. folderName .. "/*.h",
@@ -108,8 +108,9 @@ end
 
 group("tests")
 
-netherTest("sample")
-netherTest("hello-triangle")
-netherTest("shaders")
-netherTest("textures")
-netherTest("transformations")
+netherTest(1, "hello-triangle")
+netherTest(2, "shaders")
+netherTest(3, "textures")
+netherTest(4, "coordinate-systems")
+netherTest(5, "transformations")
+netherTest(6, "camera")

@@ -14,7 +14,7 @@ class RenderablePosColor
 public:
     void Generate()
     {
-        program.Load("src/tests/shaders/media/shader.vs", "src/tests/shaders/media/shader.fs");
+        program.Load("media/shaders.vs", "media/shaders.fs");
 
         vao.Generate();
         vbo.Generate(nether::BufferBindingTarget::ArrayBuffer);

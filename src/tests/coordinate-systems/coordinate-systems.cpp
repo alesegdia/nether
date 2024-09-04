@@ -15,7 +15,7 @@ class Renderable
 public:
     void Generate()
     {
-        stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
 
         tex1.LoadFromFile("media/container.jpg", nether::TextureFormat::RGB8);
         tex2.LoadFromFile("media/awesomeface.png", nether::TextureFormat::RGBA8);
@@ -27,11 +27,12 @@ public:
         vao.Bind();
 
         std::vector<float> vertices = {
-            // positions          // colors           // texture coords
-             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+            // positions          // texture coords
+
+            -0.5f,  0.5f, 0.0f,   0.0f, 1.0f, // top left 
+             0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+             0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
         };
         std::vector<unsigned int> indices = {
             0, 1, 3, // first triangle
@@ -44,25 +45,21 @@ public:
         ebo.Bind();
         ebo.UploadBufferData(indices);
 
-        vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 8 * sizeof(float), (void*)0 );
+        vao.AddVertexAttribPointer(0, 3, nether::GLType::Float, nether::GLBoolean::False, 5 * sizeof(float), (void*)0 );
         vao.EnableVertexAttribArray(0);
 
-        vao.AddVertexAttribPointer(1, 3, nether::GLType::Float, nether::GLBoolean::False, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        vao.AddVertexAttribPointer(1, 3, nether::GLType::Float, nether::GLBoolean::False, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         vao.EnableVertexAttribArray(1);
-
-        vao.AddVertexAttribPointer(2, 2, nether::GLType::Float, nether::GLBoolean::False, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        vao.EnableVertexAttribArray(2);
 
         vbo.Unbind();
         vao.Unbind();
         ebo.Unbind();
 
-        program.Load("media/textures.vs", "media/textures.fs");
+        program.Load("media/coordinate-systems.vs", "media/coordinate-systems.fs");
         program.Use();
 
         program.SetIntUniform("texture1", 0);
         program.SetIntUniform("texture2", 1);
-
     }
 
     void Cleanup()
@@ -76,12 +73,17 @@ public:
 
     void Render(float delta)
     {
+        time += delta;
         tex1.Bind(nether::TextureUnit::Texture0);
         tex2.Bind(nether::TextureUnit::Texture1);
         
-        time += delta / 500.f;
-        program.SetFloatUniform("bias", 0.5f + (sin(time) / 2.f));
+        glm::mat4 transform = glm::mat4(1.f);
+        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+        float angle = time / 1000.f;
+        transform = glm::rotate(transform, angle, glm::vec3(0.f, 0.f, 1.f));
+
         program.Use();
+        program.SetMat4Uniform("transform", transform);
 
         vao.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

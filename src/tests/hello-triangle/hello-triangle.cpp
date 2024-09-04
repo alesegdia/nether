@@ -95,11 +95,9 @@ public:
         GetRenderer().SetColorBufferBit(true);
 
         GetRenderer().BeginRender();
-        GetRenderer().UseProgramShader(program);
+        program.Use();
 
         renderable.Render();
-
-        GetRenderer().EndRender();
     }
 
     virtual void Init() override

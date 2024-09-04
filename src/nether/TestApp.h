@@ -22,9 +22,19 @@ namespace nether
         virtual void Init() = 0;
         virtual void Cleanup() = 0;
 
-        void Run()
+        virtual void OnKeyUp(const SDL_Event& evt)
         {
-            m_ctx.Init(800, 600);
+
+        }
+
+        virtual void MouseMoved(float mousePosX, float mousePosY)
+        {
+
+        }
+
+        void Run(int screenWidth = 800, int screenHeight = 600)
+        {
+            m_ctx.Init(screenWidth, screenHeight);
 
             Init();
 
@@ -42,12 +52,29 @@ namespace nether
                         if (event.key.keysym.sym == SDLK_ESCAPE) {
                             exit = 1;
                         }
-                        if (event.key.keysym.sym == SDLK_w) {
+                        if (event.key.keysym.sym == SDLK_p) {
                             GetRenderer().SetWireframeMode();
                         }
-                        if (event.key.keysym.sym == SDLK_q) {
+                        if (event.key.keysym.sym == SDLK_o) {
                             GetRenderer().SetFillMode();
                         }
+                        if (event.key.keysym.sym == SDLK_i) {
+                            GetRenderer().SetFront();
+                        }
+                        if (event.key.keysym.sym == SDLK_u) {
+                            GetRenderer().SetBack();
+                        }
+                        if (event.key.keysym.sym == SDLK_y) {
+                            GetRenderer().SetFrontBack();
+                        }
+                        OnKeyUp(event);
+                        break;
+                    case SDL_EVENT_MOUSE_MOTION:
+                    {
+                        float mx = event.motion.x;
+                        float my = event.motion.y;
+                        MouseMoved(mx, my);
+                    }
                         break;
                     default:
                         break;

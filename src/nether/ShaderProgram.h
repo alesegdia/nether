@@ -2,6 +2,8 @@
 
 #include "nether/Shader.h"
 
+#include <glm/glm.hpp>
+
 namespace nether
 {
 
@@ -90,6 +92,11 @@ namespace nether
         void SetFloatUniform(const std::string& name, float value)
         {
             glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
+        }
+
+        void SetMat4Uniform(const std::string& name, const glm::mat4& mat)
+        {
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
         }
 
     private:

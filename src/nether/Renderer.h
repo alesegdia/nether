@@ -20,7 +20,7 @@ namespace nether
         void BeginRender()
         {
             glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(clearBitField);
         }
 
         void SetColorBufferBit(bool set)
@@ -31,6 +31,7 @@ namespace nether
 
         void SetDepthBufferBit(bool set)
         {
+            glEnable(GL_DEPTH_TEST);
             depthBufferBit = set;
             SetClearBits();
         }
@@ -50,19 +51,44 @@ namespace nether
 
         void SetWireframeMode()
         {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            mode = GL_LINE;
+            UpdatePolygonMode();
         }
 
         void SetFillMode()
         {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            mode = GL_FILL;
+            UpdatePolygonMode();
+        }
+
+        void SetFrontBack()
+        {
+            face = GL_FRONT_AND_BACK;
+            UpdatePolygonMode();
+        }
+
+        void SetBack()
+        {
+            face = GL_BACK;
+            UpdatePolygonMode();
+        }
+
+        void SetFront()
+        {
+            face = GL_FRONT;
+            UpdatePolygonMode();
         }
 
 
     private:
+        void UpdatePolygonMode()
+        {
+            glPolygonMode(face, mode);
+        }
 
         void SetClearBits()
         {
+            clearBitField = 0;
             SetBit(colorBufferBit, GL_COLOR_BUFFER_BIT);
             SetBit(depthBufferBit, GL_DEPTH_BUFFER_BIT);
             // SetBit(accumBufferBit, GL_ACCUM_BUFFER_BIT);
@@ -84,6 +110,8 @@ namespace nether
         // bool accumBufferBit = false;
         bool stencilBufferBit = false;
 
+        GLenum face = GL_FRONT_AND_BACK;
+        GLenum mode = GL_FILL;
 
     };
 
