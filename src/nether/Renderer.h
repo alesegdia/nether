@@ -7,6 +7,16 @@
 
 namespace nether
 {
+    class IndexedMesh
+    {
+    public:
+
+    private:
+        std::vector<glm::fvec3> m_vertices;
+        std::vector<glm::ivec3> m_triangles;
+        std::vector<glm::ivec3> m_normals;
+    
+    };
 
     class Renderer
     {
@@ -112,6 +122,9 @@ namespace nether
 
         GLenum face = GL_FRONT_AND_BACK;
         GLenum mode = GL_FILL;
+
+        std::vector<Mesh> m_meshes;
+        std::vector<Sprite> m_sprites;
 
     };
 

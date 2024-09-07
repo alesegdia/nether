@@ -23,6 +23,24 @@
 namespace nether
 {
 
+	class SceneNode
+	{
+	public:
+	};
+
+	class Scene
+	{
+	public:
+		void AddNode(const std::shared_ptr<SceneNode>& sceneNode)
+		{
+			m_nodes.push_back(sceneNode);
+		}
+
+	private:
+		std::vector<std::shared_ptr<SceneNode>> m_nodes;
+
+	};
+
 	class Camera
 	{
 	public:
