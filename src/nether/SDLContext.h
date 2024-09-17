@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <glad/gl.h>
 
 void GLAPIENTRY
@@ -121,6 +121,7 @@ namespace nether
 
             window = SDL_CreateWindow(
                 "[glad] GL with SDL",
+                0, 0,
                 width, height,
                 SDL_WINDOW_OPENGL
             );

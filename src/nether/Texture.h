@@ -21,10 +21,10 @@ namespace nether
 
 
 
-        int LoadFromFile(const char* filePath, TextureFormat format)
+        int LoadFromFile(const std::string& filePath, TextureFormat format)
         {
             int width, height, numChannels;
-            m_data = stbi_load(filePath, &width, &height, &numChannels, 0);
+            m_data = stbi_load(filePath.c_str(), &width, &height, &numChannels, 0);
 
             if (m_data != nullptr)
             {
