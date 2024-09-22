@@ -5,7 +5,7 @@
 
 namespace nether
 {
-
+    /*
     class TestApp
     {
     public:
@@ -113,6 +113,6 @@ namespace nether
 
 
     };
-
+    */
 }
 

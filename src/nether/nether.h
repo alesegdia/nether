@@ -13,6 +13,7 @@
 #include "nether/VertexArrayObject.h"
 #include "nether/TestApp.h"
 #include "nether/Texture.h"
+#include "nether/Vertices.h"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>

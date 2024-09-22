@@ -123,8 +123,8 @@ namespace nether
         GLenum face = GL_FRONT_AND_BACK;
         GLenum mode = GL_FILL;
 
-        std::vector<Mesh> m_meshes;
-        std::vector<Sprite> m_sprites;
+        // std::vector<Mesh> m_meshes;
+        // std::vector<Sprite> m_sprites;
 
     };
 
