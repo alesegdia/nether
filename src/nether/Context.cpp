@@ -1,5 +1,8 @@
 #include "nether/Context.h"
 
+#include "nether/Texture.h"
+#include "nether/ShaderProgram.h"
+
 #include <vector>
 
 namespace
