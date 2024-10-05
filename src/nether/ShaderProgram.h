@@ -3,7 +3,7 @@
 #include "nether/Shader.h"
 
 #include <glm/glm.hpp>
-
+#include <glm/gtc/type_ptr.hpp>
 namespace nether
 {
 
