@@ -5,6 +5,8 @@
 
 #include <vector>
 
+/*
+
 namespace
 {
 	std::vector<nether::Texture> textures;
@@ -35,3 +37,4 @@ namespace nether
 		return &shaderPrograms.back();
 	}
 }
+*/

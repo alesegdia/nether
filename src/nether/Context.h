@@ -2,6 +2,7 @@
 
 #include <string>
 
+/*
 namespace nether
 {
 	class Texture;
@@ -14,3 +15,4 @@ namespace nether
 	nether::ShaderProgram* newShaderProgram(const std::string& vspath, const std::string& fspath);
 
 }
+*/
