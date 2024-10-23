@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 
+#include <stb_image.h>
 
 #include <nether/nether.h>
 

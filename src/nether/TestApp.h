@@ -5,7 +5,7 @@
 
 namespace nether
 {
-    /*
+
     class TestApp
     {
     public:
@@ -45,10 +45,10 @@ namespace nether
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
                     switch (event.type) {
-                    case SDL_EVENT_QUIT:
+                    case SDL_QUIT:
                         exit = 1;
                         break;
-                    case SDL_EVENT_KEY_UP:
+                    case SDL_KEYUP:
                         if (event.key.keysym.sym == SDLK_ESCAPE) {
                             exit = 1;
                         }
@@ -69,7 +69,7 @@ namespace nether
                         }
                         OnKeyUp(event);
                         break;
-                    case SDL_EVENT_MOUSE_MOTION:
+                    case SDL_MOUSEMOTION:
                     {
                         float mx = event.motion.x;
                         float my = event.motion.y;
@@ -113,6 +113,6 @@ namespace nether
 
 
     };
-    */
+
 }
 

@@ -1,6 +1,7 @@
 function sdlIncludeDirs(baseDir)
 	return {
 		path.join(baseDir, "include"),
+		path.join(baseDir, "include/SDL3"),
 		path.join(baseDir, "src"),
 		path.join(baseDir, "src/hidapi/hidapi"),
 	}

@@ -1,4 +1,3 @@
-// gcc example/c/gl_sdl2.c build/src/gl.c -Ibuild/include `sdl2-config --libs --cflags` -ldl
 #include <stdlib.h>
 #include <stdio.h>
 

@@ -3,7 +3,6 @@
 
 #include "Texture.h"
 #include <iostream>
-#include <glad/gl.h> // Ensure you include the necessary OpenGL headers
 
 namespace nether {
 

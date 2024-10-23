@@ -1,3 +1,5 @@
+/*
+
 #include "nether/Context.h"
 
 #include "nether/Texture.h"
@@ -5,7 +7,6 @@
 
 #include <vector>
 
-/*
 
 namespace
 {
