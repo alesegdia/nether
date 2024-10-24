@@ -94,7 +94,7 @@ namespace nether
             glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
         }
 
-        void SetMat4Uniform(const std::string& name, const glm::mat4& mat)
+        void SetMat4Uniform(const std::string& name, const glm::mat4x4& mat)
         {
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
         }
