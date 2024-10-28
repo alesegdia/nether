@@ -23,8 +23,8 @@ namespace nether {
 	private:
 		TextureWrap m_xWrap = TextureWrap::Repeat;
 		TextureWrap m_yWrap = TextureWrap::Repeat;
-		TextureMinFilter m_minFilter = TextureMinFilter::Linear;
-		TextureMagFilter m_magFilter = TextureMagFilter::Linear;
+		TextureMinFilter m_minFilter = TextureMinFilter::Nearest;
+		TextureMagFilter m_magFilter = TextureMagFilter::Nearest;
 		unsigned char* m_data = nullptr;
 		unsigned int m_texture = 0;
 	};

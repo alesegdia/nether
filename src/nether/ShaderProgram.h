@@ -99,6 +99,11 @@ namespace nether
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
         }
 
+        void SetVec2Uniform(const std::string& name, const glm::fvec2& vec)
+        {
+            glUniform2f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y);
+        }
+
     private:
         unsigned int shaderProgram;
 
