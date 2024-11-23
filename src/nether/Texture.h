@@ -13,6 +13,7 @@ namespace nether {
 	class Texture {
 	public:
 		int LoadFromFile(const std::string& filePath, TextureFormat format);
+		int Create(int width, int height, unsigned char* pixels, TextureFormat format);
 		void Bind(TextureUnit texUnit);
 		bool IsValid();
 		void SetXWrap(TextureWrap xWrap);
@@ -25,7 +26,6 @@ namespace nether {
 		TextureWrap m_yWrap = TextureWrap::Repeat;
 		TextureMinFilter m_minFilter = TextureMinFilter::Nearest;
 		TextureMagFilter m_magFilter = TextureMagFilter::Nearest;
-		unsigned char* m_data = nullptr;
 		unsigned int m_texture = 0;
 	};
 

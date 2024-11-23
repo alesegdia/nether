@@ -38,6 +38,8 @@ namespace nether
             {
                 char infoLog[512];
                 glGetShaderInfoLog(shader, 512, NULL, infoLog);
+				m_hasError = true;
+                // TODO: finish error handling
                 std::cout << "Shader with direct code compilation failed : " << infoLog << std::endl;
             }
             else
@@ -56,8 +58,20 @@ namespace nether
             glDeleteShader(shader);
         }
 
+		const std::string& GetErrorText()
+		{
+			return m_errorText;
+		}
+
+        bool HasError()
+        {
+            return m_hasError;
+        }
+
     private:
         unsigned int shader;
+        bool m_hasError = false;
+		std::string m_errorText;
 
     };
 
