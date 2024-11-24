@@ -15,17 +15,44 @@ namespace nether {
 		int LoadFromFile(const std::string& filePath, TextureFormat format);
 		void Create(int width, int height, unsigned char* pixels, TextureFormat format);
 		void Bind(TextureUnit texUnit);
-		bool IsValid();
 		void SetXWrap(TextureWrap xWrap);
 		void SetYWrap(TextureWrap yWrap);
 		void SetMinFilter(TextureMinFilter minFilter);
 		void SetMagFilter(TextureMagFilter magFilter);
+
+		int GetWidth(int mipmapLevel = 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_texture);
+			int w;
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_WIDTH, &w);
+			return w;
+		}
+
+		int GetHeight(int mipmapLevel = 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_texture);
+			int h;
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_HEIGHT, &h);
+			return h;
+		}
+
+		int GetCachedWidth()
+		{
+			return m_width;
+		}
+
+		int GetCachedHeight()
+		{
+			return m_height;
+		}
 
 	private:
 		TextureWrap m_xWrap = TextureWrap::Repeat;
 		TextureWrap m_yWrap = TextureWrap::Repeat;
 		TextureMinFilter m_minFilter = TextureMinFilter::Nearest;
 		TextureMagFilter m_magFilter = TextureMagFilter::Nearest;
+		int m_width = 0;
+		int m_height = 0;
 		unsigned int m_texture = 0;
 	};
 

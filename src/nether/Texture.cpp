@@ -7,11 +7,11 @@
 namespace nether {
 
 	int Texture::LoadFromFile(const std::string& filePath, TextureFormat format) {
-		int width, height, numChannels;
-		unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &numChannels, 0);
+		int numChannels;
+		unsigned char* data = stbi_load(filePath.c_str(), &m_width, &m_height, &numChannels, 0);
 
 		if (data != nullptr) {
-			Create(width, height, data, format);
+			Create(m_width, m_height, data, format);
 			stbi_image_free(data);
 		}
 		else {
