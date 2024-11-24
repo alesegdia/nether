@@ -12,7 +12,6 @@ namespace nether {
 
 		if (data != nullptr) {
 			Create(width, height, data, format);
-			glGenTextures(1, &m_texture);
 			stbi_image_free(data);
 		}
 		else {
@@ -23,7 +22,7 @@ namespace nether {
 		return 0;
 	}
 
-	int Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format)
+	void Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format)
 	{
 		glGenTextures(1, &m_texture);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
