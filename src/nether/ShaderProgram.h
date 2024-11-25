@@ -118,6 +118,10 @@ namespace nether
             glUniform2f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y);
         }
 
+        void SetVec4Uniform(const std::string& name, const glm::fvec4& vec)
+        {
+            glUniform4f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y, vec.z, vec.a);
+        }
 
 		ShaderCompilationInfo GetVertexShaderCompilationInfo() const
 		{
