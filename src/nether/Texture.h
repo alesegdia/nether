@@ -10,6 +10,13 @@
 
 namespace nether {
 
+	struct TextureDesc {
+		int width;
+		int height;
+		unsigned char* pixels;
+		TextureFormat format;
+	};
+
 	class Texture {
 	public:
 		int LoadFromFile(const std::string& filePath, TextureFormat format);

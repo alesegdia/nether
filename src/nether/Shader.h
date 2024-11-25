@@ -10,6 +10,14 @@
 namespace nether
 {
 
+    struct ShaderCompilationInfo
+    {
+        bool hasError = false;
+        std::string infoText;
+        bool fileLoad = false;
+        std::string filePath;
+    };
+
     class Shader
     {
     public:
@@ -20,7 +28,8 @@ namespace nether
             buffer << t.rdbuf();
             auto contents = buffer.str();
             const char* shaderStr = contents.c_str();
-
+            m_compilationInfo.fileLoad = true;
+            m_compilationInfo.filePath = filePath;
             LoadCode(shaderStr, shaderType);
         }
 
@@ -38,13 +47,19 @@ namespace nether
             {
                 char infoLog[512];
                 glGetShaderInfoLog(shader, 512, NULL, infoLog);
-				m_hasError = true;
+                m_compilationInfo.hasError = true;
                 // TODO: finish error handling
-                std::cout << "Shader with direct code compilation failed : " << infoLog << std::endl;
+				if (m_compilationInfo.fileLoad)
+                    m_compilationInfo.infoText = "Shader with path " + m_compilationInfo.filePath + " failed : " + std::string(infoLog);
+				else
+                    m_compilationInfo.infoText = "Shader with direct code compilation failed : " + std::string(infoLog);
             }
             else
             {
-                std::cout << "Shader with direct code compilation success!" << std::endl;
+				if (m_compilationInfo.fileLoad)
+                    m_compilationInfo.infoText = "Shader with path " + m_compilationInfo.filePath + " success!";
+				else
+                    m_compilationInfo.infoText = "Shader with direct code compilation success!";
             }
         }
 
@@ -58,20 +73,14 @@ namespace nether
             glDeleteShader(shader);
         }
 
-		const std::string& GetErrorText()
+		const ShaderCompilationInfo& GetCompilationInfo()
 		{
-			return m_errorText;
+			return m_compilationInfo;
 		}
-
-        bool HasError()
-        {
-            return m_hasError;
-        }
 
     private:
         unsigned int shader;
-        bool m_hasError = false;
-		std::string m_errorText;
+        ShaderCompilationInfo m_compilationInfo;
 
     };
 

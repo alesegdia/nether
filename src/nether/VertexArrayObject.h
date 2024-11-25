@@ -11,6 +11,7 @@ namespace nether
         void Generate()
         {
             glGenVertexArrays(1, &VAO);
+            // aether::gl::check_error();
         }
 
         void AddVertexAttribPointer(unsigned int index, int size, GLType type, GLBoolean normalized, GLsizei stride, GLvoid* pointer)
@@ -30,7 +31,7 @@ namespace nether
 
         void Delete()
         {
-            glDeleteVertexArrays(2, &VAO);
+            glDeleteVertexArrays(1, &VAO);
         }
 
         void Unbind()

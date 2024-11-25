@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nether/Shader.h"
+#include "aether/core/logger.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,9 +14,16 @@ namespace nether
 
         void Load(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
         {
+			m_shaderProgramCompilationInfo.fileLoad = true;
+
             nether::Shader vertexShader, fragmentShader;
+
             vertexShader.Load(vertexShaderFile, nether::ShaderType::VertexShader);
+            m_vertexShaderCompilationInfo = vertexShader.GetCompilationInfo();
+
             fragmentShader.Load(fragmentShaderFile, nether::ShaderType::FragmentShader);
+            m_fragmentShaderCompilationInfo = fragmentShader.GetCompilationInfo();
+
             Load(vertexShader, fragmentShader);
             vertexShader.Clean();
             fragmentShader.Clean();
@@ -23,9 +31,16 @@ namespace nether
 
         void LoadFromRawStrings(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
         {
+			m_shaderProgramCompilationInfo.fileLoad = false;
+
             nether::Shader vertexShader, fragmentShader;
+            
             vertexShader.LoadCode(vertexShaderCode, nether::ShaderType::VertexShader);
+            m_vertexShaderCompilationInfo = vertexShader.GetCompilationInfo();
+            
             fragmentShader.LoadCode(fragmentShaderCode, nether::ShaderType::FragmentShader);
+			m_fragmentShaderCompilationInfo =  fragmentShader.GetCompilationInfo();
+
             Load(vertexShader, fragmentShader);
             vertexShader.Clean();
             fragmentShader.Clean();
@@ -43,14 +58,13 @@ namespace nether
             if (!success) {
                 char infoLog[512];
                 glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-                std::cout << "=================================================" << std::endl
-                    << "Shader program linking failed: " << std::endl
-                    << infoLog << std::endl
-                    << "=================================================" << std::endl;
+                m_shaderProgramCompilationInfo.hasError = true;
+				m_shaderProgramCompilationInfo.infoText = "Shader program linking failed: " + std::string(infoLog);
             }
             else
             {
-                std::cout << "Shader linking success!" << std::endl;
+				m_shaderProgramCompilationInfo.hasError = false;
+				m_shaderProgramCompilationInfo.infoText = "Shader linking success!";
             }
         }
 
@@ -104,9 +118,27 @@ namespace nether
             glUniform2f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y);
         }
 
+
+		ShaderCompilationInfo GetVertexShaderCompilationInfo() const
+		{
+			return m_vertexShaderCompilationInfo;
+		}
+
+        ShaderCompilationInfo GetFragmentShaderCompilationInfo() const
+        {
+            return m_fragmentShaderCompilationInfo;
+        }
+
+		ShaderCompilationInfo GetShaderProgramCompilationInfo() const
+		{
+			return m_shaderProgramCompilationInfo;
+		}
+
     private:
         unsigned int shaderProgram;
-
+        ShaderCompilationInfo m_fragmentShaderCompilationInfo;
+        ShaderCompilationInfo m_vertexShaderCompilationInfo;
+		ShaderCompilationInfo m_shaderProgramCompilationInfo;
     };
 
 }
