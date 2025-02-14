@@ -2,8 +2,10 @@
 
 #include "nether/Color.h"
 
+#include <vector>
 #include <glad/gl.h>
 
+#include <glm/glm.hpp>
 
 namespace nether
 {
