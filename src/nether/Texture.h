@@ -19,7 +19,7 @@ namespace nether {
 
 	class Texture {
 	public:
-		int LoadFromFile(const std::string& filePath, TextureFormat format);
+		int LoadFromFile(const std::string& filePath);
 		void Create(int width, int height, unsigned char* pixels, TextureFormat format);
 		void Bind(TextureUnit texUnit);
 		void SetXWrap(TextureWrap xWrap);

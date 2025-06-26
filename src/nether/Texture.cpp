@@ -6,12 +6,26 @@
 
 namespace nether {
 
-	int Texture::LoadFromFile(const std::string& filePath, TextureFormat format) {
+	int Texture::LoadFromFile(const std::string& filePath) {
 		int numChannels;
 		unsigned char* data = stbi_load(filePath.c_str(), &m_width, &m_height, &numChannels, 0);
 
+		TextureFormat textureFormat = TextureFormat::RGB8;
+		if(numChannels == 4)
+		{
+			textureFormat = TextureFormat::RGBA8;
+		}
+		else if(numChannels == 3)
+		{
+			textureFormat = TextureFormat::RGB8;
+		}
+		else
+		{
+			assert(false);
+		}
+
 		if (data != nullptr) {
-			Create(m_width, m_height, data, format);
+			Create(m_width, m_height, data, textureFormat);
 			stbi_image_free(data);
 		}
 		else {
