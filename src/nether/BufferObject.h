@@ -53,7 +53,7 @@ namespace nether
 
         BufferUsage bufferUsage = BufferUsage::StaticDraw;
         BufferBindingTarget bufferBindingTarget = BufferBindingTarget::ArrayBuffer;
-        unsigned int vbo;
+        unsigned int vbo = 0;
 
     };
 

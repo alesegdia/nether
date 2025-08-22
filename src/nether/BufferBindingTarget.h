@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/gl.h>
+#include <aether/render/aethergl.h>
 
 namespace nether
 {

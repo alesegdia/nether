@@ -3,7 +3,7 @@
 #include "nether/Color.h"
 
 #include <vector>
-#include <glad/gl.h>
+#include "nethergl.h"
 
 #include <glm/glm.hpp>
 

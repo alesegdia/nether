@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <SDL.h>
-#include <glad/gl.h>
+#include "nethergl.h"
 
 namespace nether {
 

@@ -79,7 +79,7 @@ namespace nether
 		}
 
     private:
-        unsigned int shader;
+        unsigned int shader = 0;
         ShaderCompilationInfo m_compilationInfo;
 
     };

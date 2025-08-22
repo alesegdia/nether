@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/gl.h>
+#include "nethergl.h"
 #include <SDL.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -14,10 +14,6 @@
 #include "nether/TestApp.h"
 #include "nether/Texture.h"
 #include "nether/Vertices.h"
-
-#include <glad/gl.h>
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
 
 #include <rztl/rztl.h>
 

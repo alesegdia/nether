@@ -8,6 +8,8 @@ namespace nether
     class VertexArrayObject
     {
     public:
+		VertexArrayObject() : VAO(0) {}
+
         void Generate()
         {
             glGenVertexArrays(1, &VAO);
