@@ -1,5 +1,8 @@
 #pragma once
 
-// Nether OpenGL wrapper header
-// This header wraps glad/gl.h for consistent OpenGL includes across the nether library
+
+#ifdef AETHER_USE_GLAD
 #include <glad/gl.h>
+#elif AETHER_USE_QT
+#include <QOpenGLFunctions>
+#endif
