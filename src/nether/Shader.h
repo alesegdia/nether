@@ -37,16 +37,16 @@ namespace nether
         {
             const char* shaderStr = code.c_str();
 
-            shader = glCreateShader(GLenum(shaderType));
-            glShaderSource(shader, 1, &shaderStr, NULL);
-            glCompileShader(shader);
+            shader = nether::gl::createShader(GLenum(shaderType));
+            nether::gl::shaderSource(shader, 1, &shaderStr, NULL);
+            nether::gl::compileShader(shader);
 
             int success = 0;
-            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            nether::gl::getShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success)
             {
                 char infoLog[512];
-                glGetShaderInfoLog(shader, 512, NULL, infoLog);
+                nether::gl::getShaderInfoLog(shader, 512, NULL, infoLog);
                 m_compilationInfo.hasError = true;
                 // TODO: finish error handling
 				if (m_compilationInfo.fileLoad)
@@ -70,7 +70,7 @@ namespace nether
 
         void Clean()
         {
-            glDeleteShader(shader);
+            nether::gl::deleteShader(shader);
         }
 
 		const ShaderCompilationInfo& GetCompilationInfo()

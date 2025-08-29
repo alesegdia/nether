@@ -29,17 +29,17 @@ namespace nether {
 
 		int GetWidth(int mipmapLevel = 0)
 		{
-			glBindTexture(GL_TEXTURE_2D, m_texture);
+			nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
 			int w;
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_WIDTH, &w);
+			nether::gl::getTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_WIDTH, &w);
 			return w;
 		}
 
 		int GetHeight(int mipmapLevel = 0)
 		{
-			glBindTexture(GL_TEXTURE_2D, m_texture);
+			nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
 			int h;
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_HEIGHT, &h);
+			nether::gl::getTexLevelParameteriv(GL_TEXTURE_2D, mipmapLevel, GL_TEXTURE_HEIGHT, &h);
 			return h;
 		}
 

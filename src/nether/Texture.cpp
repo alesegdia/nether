@@ -38,27 +38,27 @@ namespace nether {
 
 	void Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format)
 	{
-		glGenTextures(1, &m_texture);
-		glBindTexture(GL_TEXTURE_2D, m_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
+		nether::gl::genTextures(1, &m_texture);
+		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
 
 		switch (format) {
 		case TextureFormat::RGB8:
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 			break;
 		case TextureFormat::RGBA8:
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 			break;
 		}
-		glGenerateMipmap(GL_TEXTURE_2D);
+		nether::gl::generateMipmap(GL_TEXTURE_2D);
 	}
 
 	void Texture::Bind(TextureUnit texUnit) {
-		glActiveTexture(GLenum(texUnit));
-		glBindTexture(GL_TEXTURE_2D, m_texture);
+		nether::gl::activeTexture(GLenum(texUnit));
+		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
 	}
 
 	void Texture::SetXWrap(TextureWrap xWrap) {

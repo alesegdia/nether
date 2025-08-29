@@ -1,3 +1,4 @@
+#ifndef AETHER_USE_QT
 #include "TestApp.h"
 
 namespace nether
@@ -97,3 +98,6 @@ namespace nether
 	}
 
 }
+
+
+#endif

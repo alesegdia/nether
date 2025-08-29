@@ -12,33 +12,33 @@ namespace nether
 
         void Generate()
         {
-            glGenVertexArrays(1, &VAO);
+            nether::gl::genVertexArrays(1, &VAO);
             // aether::gl::check_error();
         }
 
         void AddVertexAttribPointer(unsigned int index, int size, GLType type, GLBoolean normalized, GLsizei stride, GLvoid* pointer)
         {
-            glVertexAttribPointer(index, size, GLenum(type), GLboolean(normalized), stride, pointer);
+            nether::gl::vertexAttribPointer(index, size, GLenum(type), GLboolean(normalized), stride, pointer);
         }
 
         void Bind()
         {
-            glBindVertexArray(VAO);
+            nether::gl::bindVertexArray(VAO);
         }
 
         void EnableVertexAttribArray(unsigned int index)
         {
-            glEnableVertexAttribArray(index);
+            nether::gl::enableVertexAttribArray(index);
         }
 
         void Delete()
         {
-            glDeleteVertexArrays(1, &VAO);
+            nether::gl::deleteVertexArrays(1, &VAO);
         }
 
         void Unbind()
         {
-            glBindVertexArray(0);
+            nether::gl::bindVertexArray(0);
         }
 
     private:

@@ -1,5 +1,6 @@
 #pragma once
 
+#ifndef AETHER_USE_QT
 #include "nether/SDLContext.h"
 #include "nether/Renderer.h"
 
@@ -40,3 +41,5 @@ namespace nether
 
 }
 
+
+#endif

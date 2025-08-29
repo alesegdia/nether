@@ -31,8 +31,8 @@ namespace nether
 
         void BeginRender()
         {
-            glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-            glClear(clearBitField);
+            nether::gl::clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+            nether::gl::clear(clearBitField);
         }
 
         void SetColorBufferBit(bool set)
@@ -43,7 +43,7 @@ namespace nether
 
         void SetDepthBufferBit(bool set)
         {
-            glEnable(GL_DEPTH_TEST);
+            nether::gl::enable(GL_DEPTH_TEST);
             depthBufferBit = set;
             SetClearBits();
         }
@@ -95,7 +95,7 @@ namespace nether
     private:
         void UpdatePolygonMode()
         {
-            glPolygonMode(face, mode);
+            nether::gl::polygonMode(face, mode);
         }
 
         void SetClearBits()

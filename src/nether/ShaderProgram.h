@@ -48,16 +48,16 @@ namespace nether
 
         void Load(Shader vertexShader, Shader fragmentShader)
         {
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader.GetShaderObject());
-            glAttachShader(shaderProgram, fragmentShader.GetShaderObject());
-            glLinkProgram(shaderProgram);
+            shaderProgram = nether::gl::createProgram();
+            nether::gl::attachShader(shaderProgram, vertexShader.GetShaderObject());
+            nether::gl::attachShader(shaderProgram, fragmentShader.GetShaderObject());
+            nether::gl::linkProgram(shaderProgram);
 
             int success = 0;
-            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+            nether::gl::getProgramiv(shaderProgram, GL_LINK_STATUS, &success);
             if (!success) {
                 char infoLog[512];
-                glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+                nether::gl::getProgramInfoLog(shaderProgram, 512, NULL, infoLog);
                 m_shaderProgramCompilationInfo.hasError = true;
 				m_shaderProgramCompilationInfo.infoText = "Shader program linking failed: " + std::string(infoLog);
             }
@@ -70,12 +70,12 @@ namespace nether
 
         void Use()
         {
-            glUseProgram(shaderProgram);
+            nether::gl::useProgram(shaderProgram);
         }
 
         void Unbind()
         {
-            glUseProgram(0);
+            nether::gl::useProgram(0);
         }
 
         bool operator==(const ShaderProgram& other)
@@ -90,42 +90,42 @@ namespace nether
 
         void Delete()
         {
-            glDeleteProgram(shaderProgram);
+            nether::gl::deleteProgram(shaderProgram);
         }
 
         void SetBoolUniform(const std::string& name, bool value)
         {
-            glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value);
+            nether::gl::uniform1i(nether::gl::getUniformLocation(shaderProgram, name.c_str()), (int)value);
         }
 
         void SetIntUniform(const std::string& name, int value)
         {
-            glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
+            nether::gl::uniform1i(nether::gl::getUniformLocation(shaderProgram, name.c_str()), value);
         }
 
         void SetFloatUniform(const std::string& name, float value)
         {
-            glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
+            nether::gl::uniform1f(nether::gl::getUniformLocation(shaderProgram, name.c_str()), value);
         }
 
         void SetMat4Uniform(const std::string& name, const glm::mat4x4& mat)
         {
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+            nether::gl::uniformMatrix4fv(nether::gl::getUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
         }
 
         void SetVec2Uniform(const std::string& name, const glm::fvec2& vec)
         {
-            glUniform2f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y);
+            nether::gl::uniform2f(nether::gl::getUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y);
         }
 
         void SetVec3Uniform(const std::string& name, const glm::fvec3& vec)
         {
-            glUniform3f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y, vec.z);
+            nether::gl::uniform3f(nether::gl::getUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y, vec.z);
         }
 
         void SetVec4Uniform(const std::string& name, const glm::fvec4& vec)
         {
-            glUniform4f(glGetUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y, vec.z, vec.a);
+            nether::gl::uniform4f(nether::gl::getUniformLocation(shaderProgram, name.c_str()), vec.x, vec.y, vec.z, vec.a);
         }
 
 		ShaderCompilationInfo GetVertexShaderCompilationInfo() const

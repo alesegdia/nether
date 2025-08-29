@@ -4,6 +4,7 @@
 
 #include "nether/BufferBindingTarget.h"
 #include "nether/BufferUsage.h"
+#include "nether/NetherGL.h"
 
 
 namespace nether
@@ -15,28 +16,28 @@ namespace nether
         {
             SetBufferBindingTarget(pBufferBindingTarget);
             SetBufferUsage(pBufferUsage);
-            glGenBuffers(1, &vbo);
+            nether::gl::genBuffers(1, &vbo);
         }
 
         template <typename T>
         void UploadBufferData(const std::vector<T>& items)
         {
-            glBufferData(static_cast<GLenum>(bufferBindingTarget), sizeof(T) * items.size(), items.data(), GLenum(bufferUsage));
+            nether::gl::bufferData(static_cast<GLenum>(bufferBindingTarget), sizeof(T) * items.size(), items.data(), GLenum(bufferUsage));
         }
 
         void Bind()
         {
-            glBindBuffer(static_cast<GLenum>(bufferBindingTarget), vbo);
+            nether::gl::bindBuffer(static_cast<GLenum>(bufferBindingTarget), vbo);
         }
 
         void Unbind()
         {
-            glBindBuffer(static_cast<GLenum>(bufferBindingTarget), 0);
+            nether::gl::bindBuffer(static_cast<GLenum>(bufferBindingTarget), 0);
         }
 
         void Delete()
         {
-            glDeleteBuffers(1, &vbo);
+            nether::gl::deleteBuffers(1, &vbo);
         }
 
     private:
