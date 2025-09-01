@@ -1,5 +1,30 @@
 #pragma once
 
+/*
+ * NetherGL - OpenGL abstraction layer with optional error checking
+ * 
+ * GL Error Checking Feature:
+ * To enable automatic GL error checking on each call, define NETHER_GL_ERROR_CHECKING:
+ * 
+ * Option 1: Uncomment the line below
+ * Option 2: Add -DNETHER_GL_ERROR_CHECKING to your compiler flags
+ * Option 3: Define it in your build system (CMake, etc.)
+ * 
+ * When enabled, every nether::gl:: function call will automatically check for 
+ * OpenGL errors and print them to stderr in the format:
+ * [NETHER GL ERROR] <function_name> - <error_description>
+ * 
+ * Example output:
+ * [NETHER GL ERROR] bindTexture - GL_INVALID_ENUM
+ * 
+ * Note: This adds a glGetError() call after each GL function, which can impact 
+ * performance, so it's recommended to only enable during development/debugging.
+ */
+
+// Define to enable GL error checking on each call
+// Uncomment the line below to enable GL error checking
+#define NETHER_GL_ERROR_CHECKING
+
 #ifdef AETHER_USE_GLAD
 #include <glad/gl.h>
 #elif AETHER_USE_QT
@@ -8,8 +33,18 @@
 #include <QOpenGLExtraFunctions>
 #endif
 
+// Include headers needed for error checking
+#ifdef NETHER_GL_ERROR_CHECKING
+#include <iostream>
+#include <string>
+#endif
+
 namespace nether {
 namespace gl {
+
+// Forward declaration needed for error checking
+class OpenGLFunctions;
+extern OpenGLFunctions* g_gl;
 
 // OpenGL function abstraction interface
 class OpenGLFunctions {
@@ -84,6 +119,50 @@ public:
     // Error checking
     virtual unsigned int GetError() = 0;
 };
+
+#ifdef NETHER_GL_ERROR_CHECKING
+// GL error checking utility function - now defined after OpenGLFunctions class
+inline void checkGLError(const char* functionName) {
+    unsigned int error = g_gl->GetError();
+    if (error != 0x0000) { // GL_NO_ERROR = 0x0000
+        std::string errorString;
+        switch (error) {
+            case 0x0500: // GL_INVALID_ENUM
+                errorString = "GL_INVALID_ENUM";
+                break;
+            case 0x0501: // GL_INVALID_VALUE
+                errorString = "GL_INVALID_VALUE";
+                break;
+            case 0x0502: // GL_INVALID_OPERATION
+                errorString = "GL_INVALID_OPERATION";
+                break;
+            case 0x0503: // GL_STACK_OVERFLOW (deprecated in core profile)
+                errorString = "GL_STACK_OVERFLOW";
+                break;
+            case 0x0504: // GL_STACK_UNDERFLOW (deprecated in core profile)
+                errorString = "GL_STACK_UNDERFLOW";
+                break;
+            case 0x0505: // GL_OUT_OF_MEMORY
+                errorString = "GL_OUT_OF_MEMORY";
+                break;
+            case 0x0506: // GL_INVALID_FRAMEBUFFER_OPERATION
+                errorString = "GL_INVALID_FRAMEBUFFER_OPERATION";
+                break;
+            case 0x0507: // GL_CONTEXT_LOST
+                errorString = "GL_CONTEXT_LOST";
+                break;
+            default:
+                errorString = "UNKNOWN_GL_ERROR (0x" + std::to_string(error) + ")";
+                break;
+        }
+        std::cerr << "[NETHER GL ERROR] " << functionName << " - " << errorString << std::endl;
+    }
+}
+
+#define NETHER_GL_CHECK(call) do { call; nether::gl::checkGLError(#call); } while(0)
+#else
+#define NETHER_GL_CHECK(call) call
+#endif
 
 #ifdef AETHER_USE_GLAD
 // Direct OpenGL implementation using GLAD
@@ -351,69 +430,358 @@ public:
 // Global OpenGL function pointer - to be set by the application
 extern OpenGLFunctions* g_gl;
 
-// Convenience functions that use the global function pointer
-inline unsigned int createShader(unsigned int type) { return g_gl->CreateShader(type); }
-inline void shaderSource(unsigned int shader, int count, const char* const* string, const int* length) { g_gl->ShaderSource(shader, count, string, length); }
-inline void compileShader(unsigned int shader) { g_gl->CompileShader(shader); }
-inline void deleteShader(unsigned int shader) { g_gl->DeleteShader(shader); }
-inline void getShaderiv(unsigned int shader, unsigned int pname, int* params) { g_gl->GetShaderiv(shader, pname, params); }
-inline void getShaderInfoLog(unsigned int shader, int bufSize, int* length, char* infoLog) { g_gl->GetShaderInfoLog(shader, bufSize, length, infoLog); }
+// Convenience functions that use the global function pointer - now with optional error checking
+inline unsigned int createShader(unsigned int type) { 
+    unsigned int result = g_gl->CreateShader(type);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("createShader");
+#endif
+    return result;
+}
 
-inline unsigned int createProgram() { return g_gl->CreateProgram(); }
-inline void attachShader(unsigned int program, unsigned int shader) { g_gl->AttachShader(program, shader); }
-inline void linkProgram(unsigned int program) { g_gl->LinkProgram(program); }
-inline void useProgram(unsigned int program) { g_gl->UseProgram(program); }
-inline void deleteProgram(unsigned int program) { g_gl->DeleteProgram(program); }
-inline void getProgramiv(unsigned int program, unsigned int pname, int* params) { g_gl->GetProgramiv(program, pname, params); }
-inline void getProgramInfoLog(unsigned int program, int bufSize, int* length, char* infoLog) { g_gl->GetProgramInfoLog(program, bufSize, length, infoLog); }
-inline int getUniformLocation(unsigned int program, const char* name) { return g_gl->GetUniformLocation(program, name); }
-inline int getAttribLocation(unsigned int program, const char* name) { return g_gl->GetAttribLocation(program, name); }
+inline void shaderSource(unsigned int shader, int count, const char* const* string, const int* length) { 
+    g_gl->ShaderSource(shader, count, string, length);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("shaderSource");
+#endif
+}
 
-inline void genBuffers(int n, unsigned int* buffers) { g_gl->GenBuffers(n, buffers); }
-inline void bindBuffer(unsigned int target, unsigned int buffer) { g_gl->BindBuffer(target, buffer); }
-inline void bufferData(unsigned int target, long long size, const void* data, unsigned int usage) { g_gl->BufferData(target, size, data, usage); }
-inline void deleteBuffers(int n, const unsigned int* buffers) { g_gl->DeleteBuffers(n, buffers); }
+inline void compileShader(unsigned int shader) { 
+    g_gl->CompileShader(shader);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("compileShader");
+#endif
+}
 
-inline void genVertexArrays(int n, unsigned int* arrays) { g_gl->GenVertexArrays(n, arrays); }
-inline void bindVertexArray(unsigned int array) { g_gl->BindVertexArray(array); }
-inline void deleteVertexArrays(int n, const unsigned int* arrays) { g_gl->DeleteVertexArrays(n, arrays); }
-inline void enableVertexAttribArray(unsigned int index) { g_gl->EnableVertexAttribArray(index); }
+inline void deleteShader(unsigned int shader) { 
+    g_gl->DeleteShader(shader);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("deleteShader");
+#endif
+}
+
+inline void getShaderiv(unsigned int shader, unsigned int pname, int* params) { 
+    g_gl->GetShaderiv(shader, pname, params);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getShaderiv");
+#endif
+}
+
+inline void getShaderInfoLog(unsigned int shader, int bufSize, int* length, char* infoLog) { 
+    g_gl->GetShaderInfoLog(shader, bufSize, length, infoLog);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getShaderInfoLog");
+#endif
+}
+
+inline unsigned int createProgram() { 
+    unsigned int result = g_gl->CreateProgram();
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("createProgram");
+#endif
+    return result;
+}
+
+inline void attachShader(unsigned int program, unsigned int shader) { 
+    g_gl->AttachShader(program, shader);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("attachShader");
+#endif
+}
+
+inline void linkProgram(unsigned int program) { 
+    g_gl->LinkProgram(program);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("linkProgram");
+#endif
+}
+
+inline void useProgram(unsigned int program) { 
+    g_gl->UseProgram(program);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("useProgram");
+#endif
+}
+
+inline void deleteProgram(unsigned int program) { 
+    g_gl->DeleteProgram(program);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("deleteProgram");
+#endif
+}
+
+inline void getProgramiv(unsigned int program, unsigned int pname, int* params) { 
+    g_gl->GetProgramiv(program, pname, params);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getProgramiv");
+#endif
+}
+
+inline void getProgramInfoLog(unsigned int program, int bufSize, int* length, char* infoLog) { 
+    g_gl->GetProgramInfoLog(program, bufSize, length, infoLog);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getProgramInfoLog");
+#endif
+}
+
+inline int getUniformLocation(unsigned int program, const char* name) { 
+    int result = g_gl->GetUniformLocation(program, name);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getUniformLocation");
+#endif
+    return result;
+}
+
+inline int getAttribLocation(unsigned int program, const char* name) { 
+    int result = g_gl->GetAttribLocation(program, name);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getAttribLocation");
+#endif
+    return result;
+}
+
+inline void genBuffers(int n, unsigned int* buffers) { 
+    g_gl->GenBuffers(n, buffers);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("genBuffers");
+#endif
+}
+
+inline void bindBuffer(unsigned int target, unsigned int buffer) { 
+    g_gl->BindBuffer(target, buffer);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("bindBuffer");
+#endif
+}
+
+inline void bufferData(unsigned int target, long long size, const void* data, unsigned int usage) { 
+    g_gl->BufferData(target, size, data, usage);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("bufferData");
+#endif
+}
+
+inline void deleteBuffers(int n, const unsigned int* buffers) { 
+    g_gl->DeleteBuffers(n, buffers);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("deleteBuffers");
+#endif
+}
+
+inline void genVertexArrays(int n, unsigned int* arrays) { 
+    g_gl->GenVertexArrays(n, arrays);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("genVertexArrays");
+#endif
+}
+
+inline void bindVertexArray(unsigned int array) { 
+    g_gl->BindVertexArray(array);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("bindVertexArray");
+#endif
+}
+
+inline void deleteVertexArrays(int n, const unsigned int* arrays) { 
+    g_gl->DeleteVertexArrays(n, arrays);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("deleteVertexArrays");
+#endif
+}
+
+inline void enableVertexAttribArray(unsigned int index) { 
+    g_gl->EnableVertexAttribArray(index);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("enableVertexAttribArray");
+#endif
+}
+
 inline void vertexAttribPointer(unsigned int index, int size, unsigned int type, unsigned char normalized, int stride, const void* pointer) { 
     g_gl->VertexAttribPointer(index, size, type, normalized, stride, pointer); 
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("vertexAttribPointer");
+#endif
 }
 
-inline void genTextures(int n, unsigned int* textures) { g_gl->GenTextures(n, textures); }
-inline void bindTexture(unsigned int target, unsigned int texture) { g_gl->BindTexture(target, texture); }
+inline void genTextures(int n, unsigned int* textures) { 
+    g_gl->GenTextures(n, textures);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("genTextures");
+#endif
+}
+
+inline void bindTexture(unsigned int target, unsigned int texture) { 
+    g_gl->BindTexture(target, texture);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("bindTexture");
+#endif
+}
+
 inline void texImage2D(unsigned int target, int level, int internalformat, int width, int height, int border, unsigned int format, unsigned int type, const void* pixels) { 
     g_gl->TexImage2D(target, level, internalformat, width, height, border, format, type, pixels); 
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("texImage2D");
+#endif
 }
-inline void texParameteri(unsigned int target, unsigned int pname, int param) { g_gl->TexParameteri(target, pname, param); }
-inline void deleteTextures(int n, const unsigned int* textures) { g_gl->DeleteTextures(n, textures); }
-inline void activeTexture(unsigned int texture) { g_gl->ActiveTexture(texture); }
-inline void generateMipmap(unsigned int target) { g_gl->GenerateMipmap(target); }
-inline void getTexLevelParameteriv(unsigned int target, int level, unsigned int pname, int* params) { g_gl->GetTexLevelParameteriv(target, level, pname, params); }
 
-inline void uniform1i(int location, int v0) { g_gl->Uniform1i(location, v0); }
-inline void uniform1f(int location, float v0) { g_gl->Uniform1f(location, v0); }
-inline void uniform2f(int location, float v0, float v1) { g_gl->Uniform2f(location, v0, v1); }
-inline void uniform3f(int location, float v0, float v1, float v2) { g_gl->Uniform3f(location, v0, v1, v2); }
-inline void uniform4f(int location, float v0, float v1, float v2, float v3) { g_gl->Uniform4f(location, v0, v1, v2, v3); }
-inline void uniformMatrix4fv(int location, int count, unsigned char transpose, const float* value) { g_gl->UniformMatrix4fv(location, count, transpose, value); }
+inline void texParameteri(unsigned int target, unsigned int pname, int param) { 
+    g_gl->TexParameteri(target, pname, param);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("texParameteri");
+#endif
+}
 
-inline void drawElements(unsigned int mode, int count, unsigned int type, const void* indices) { g_gl->DrawElements(mode, count, type, indices); }
-inline void drawArrays(unsigned int mode, int first, int count) { g_gl->DrawArrays(mode, first, count); }
+inline void deleteTextures(int n, const unsigned int* textures) { 
+    g_gl->DeleteTextures(n, textures);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("deleteTextures");
+#endif
+}
 
-inline void enable(unsigned int cap) { g_gl->Enable(cap); }
-inline void disable(unsigned int cap) { g_gl->Disable(cap); }
-inline void blendFunc(unsigned int sfactor, unsigned int dfactor) { g_gl->BlendFunc(sfactor, dfactor); }
-inline void depthFunc(unsigned int func) { g_gl->DepthFunc(func); }
-inline void cullFace(unsigned int mode) { g_gl->CullFace(mode); }
-inline void clear(unsigned int mask) { g_gl->Clear(mask); }
-inline void clearColor(float red, float green, float blue, float alpha) { g_gl->ClearColor(red, green, blue, alpha); }
-inline void viewport(int x, int y, int width, int height) { g_gl->Viewport(x, y, width, height); }
-inline void polygonMode(unsigned int face, unsigned int mode) { g_gl->PolygonMode(face, mode); }
+inline void activeTexture(unsigned int texture) { 
+    g_gl->ActiveTexture(texture);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("activeTexture");
+#endif
+}
 
-inline unsigned int getError() { return g_gl->GetError(); }
+inline void generateMipmap(unsigned int target) { 
+    g_gl->GenerateMipmap(target);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("generateMipmap");
+#endif
+}
+
+inline void getTexLevelParameteriv(unsigned int target, int level, unsigned int pname, int* params) { 
+    g_gl->GetTexLevelParameteriv(target, level, pname, params);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("getTexLevelParameteriv");
+#endif
+}
+
+inline void uniform1i(int location, int v0) { 
+    g_gl->Uniform1i(location, v0);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniform1i");
+#endif
+}
+
+inline void uniform1f(int location, float v0) { 
+    g_gl->Uniform1f(location, v0);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniform1f");
+#endif
+}
+
+inline void uniform2f(int location, float v0, float v1) { 
+    g_gl->Uniform2f(location, v0, v1);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniform2f");
+#endif
+}
+
+inline void uniform3f(int location, float v0, float v1, float v2) { 
+    g_gl->Uniform3f(location, v0, v1, v2);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniform3f");
+#endif
+}
+
+inline void uniform4f(int location, float v0, float v1, float v2, float v3) { 
+    g_gl->Uniform4f(location, v0, v1, v2, v3);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniform4f");
+#endif
+}
+
+inline void uniformMatrix4fv(int location, int count, unsigned char transpose, const float* value) { 
+    g_gl->UniformMatrix4fv(location, count, transpose, value);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("uniformMatrix4fv");
+#endif
+}
+
+inline void drawElements(unsigned int mode, int count, unsigned int type, const void* indices) { 
+    g_gl->DrawElements(mode, count, type, indices);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("drawElements");
+#endif
+}
+
+inline void drawArrays(unsigned int mode, int first, int count) { 
+    g_gl->DrawArrays(mode, first, count);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("drawArrays");
+#endif
+}
+
+inline void enable(unsigned int cap) { 
+    g_gl->Enable(cap);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("enable");
+#endif
+}
+
+inline void disable(unsigned int cap) { 
+    g_gl->Disable(cap);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("disable");
+#endif
+}
+
+inline void blendFunc(unsigned int sfactor, unsigned int dfactor) { 
+    g_gl->BlendFunc(sfactor, dfactor);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("blendFunc");
+#endif
+}
+
+inline void depthFunc(unsigned int func) { 
+    g_gl->DepthFunc(func);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("depthFunc");
+#endif
+}
+
+inline void cullFace(unsigned int mode) { 
+    g_gl->CullFace(mode);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("cullFace");
+#endif
+}
+
+inline void clear(unsigned int mask) { 
+    g_gl->Clear(mask);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("clear");
+#endif
+}
+
+inline void clearColor(float red, float green, float blue, float alpha) { 
+    g_gl->ClearColor(red, green, blue, alpha);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("clearColor");
+#endif
+}
+
+inline void viewport(int x, int y, int width, int height) { 
+    g_gl->Viewport(x, y, width, height);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("viewport");
+#endif
+}
+
+inline void polygonMode(unsigned int face, unsigned int mode) { 
+    g_gl->PolygonMode(face, mode);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("polygonMode");
+#endif
+}
+
+inline unsigned int getError() { 
+    return g_gl->GetError();
+    // Note: We don't check for errors on getError() itself to avoid infinite recursion
+}
 
 // Initialization functions
 void initializeDirectGL();
