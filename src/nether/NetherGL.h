@@ -23,7 +23,7 @@
 
 // Define to enable GL error checking on each call
 // Uncomment the line below to enable GL error checking
-#define NETHER_GL_ERROR_CHECKING
+// #define NETHER_GL_ERROR_CHECKING
 
 #ifdef AETHER_USE_GLAD
 #include <glad/gl.h>
