@@ -47,7 +47,9 @@ namespace nether {
 
 		switch (format) {
 		case TextureFormat::RGB8:
-			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			std::cout << "RGB8 format not currently supported. Loading RGB8 format makes it crash for some reason." << std::endl;
+			// nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			return;
 			break;
 		case TextureFormat::RGBA8:
 			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
