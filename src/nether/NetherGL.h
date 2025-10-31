@@ -29,6 +29,7 @@
 #include <glad/gl.h>
 #elif AETHER_USE_QT
 #include <QOpenGLFunctions>
+#include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLContext>
 #include <QOpenGLExtraFunctions>
 #endif
@@ -132,6 +133,7 @@ public:
     virtual void BindRenderbuffer(unsigned int target, unsigned int renderbuffer) = 0;
     virtual void DeleteRenderbuffers(int n, const unsigned int* renderbuffers) = 0;
     virtual void RenderbufferStorage(unsigned int target, unsigned int internalformat, int width, int height) = 0;
+    virtual void RenderbufferStorageMultisample(unsigned int target, int samples, unsigned int internalformat, int width, int height) = 0;
     virtual void FramebufferRenderbuffer(unsigned int target, unsigned int attachment, unsigned int renderbuffertarget, unsigned int renderbuffer) = 0;
     virtual unsigned int CheckFramebufferStatus(unsigned int target) = 0;
     virtual void DrawBuffers(int n, const unsigned int* bufs) = 0;
@@ -411,6 +413,7 @@ public:
     void BindRenderbuffer(unsigned int target, unsigned int renderbuffer) override { glBindRenderbuffer(target, renderbuffer); }
     void DeleteRenderbuffers(int n, const unsigned int* renderbuffers) override { glDeleteRenderbuffers(n, renderbuffers); }
     void RenderbufferStorage(unsigned int target, unsigned int internalformat, int width, int height) override { glRenderbufferStorage(target, internalformat, width, height); }
+    void RenderbufferStorageMultisample(unsigned int target, int samples, unsigned int internalformat, int width, int height) override { glRenderbufferStorageMultisample(target, samples, internalformat, width, height); }
     void FramebufferRenderbuffer(unsigned int target, unsigned int attachment, unsigned int renderbuffertarget, unsigned int renderbuffer) override { glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer); }
     unsigned int CheckFramebufferStatus(unsigned int target) override { return glCheckFramebufferStatus(target); }
     void DrawBuffers(int n, const unsigned int* bufs) override { glDrawBuffers(n, bufs); }
@@ -562,11 +565,10 @@ public:
 // Qt OpenGL implementation using QOpenGLExtraFunctions (OpenGL 4.0+ functions)
 class QtOpenGLFunctions : public OpenGLFunctions {
 private:
-    QOpenGLExtraFunctions* m_gl;
+    QOpenGLFunctions_4_5_Core* m_gl;
     
 public:
-    QtOpenGLFunctions(QOpenGLContext* context) 
-        : m_gl(context->extraFunctions())
+    QtOpenGLFunctions(QOpenGLFunctions_4_5_Core* functions)
     {
     }
     
@@ -768,6 +770,9 @@ public:
     void RenderbufferStorage(unsigned int target, unsigned int internalformat, int width, int height) override { 
         m_gl->glRenderbufferStorage(target, internalformat, width, height);
     }
+    void RenderbufferStorageMultisample(unsigned int target, int samples, unsigned int internalformat, int width, int height) override { 
+        m_gl->glRenderbufferStorageMultisample(target, samples, internalformat, width, height);
+    }
     void FramebufferRenderbuffer(unsigned int target, unsigned int attachment, unsigned int renderbuffertarget, unsigned int renderbuffer) override { 
         m_gl->glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
     }
@@ -805,9 +810,6 @@ public:
     }
     void TexStorage3D(unsigned int target, int levels, unsigned int internalformat, int width, int height, int depth) override { 
         m_gl->glTexStorage3D(target, levels, internalformat, width, height, depth);
-    }
-    void GetTexImage(unsigned int target, int level, unsigned int format, unsigned int type, void* pixels) override { 
-        m_gl->glGetTexImage(target, level, format, type, pixels);
     }
     void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) override { 
         m_gl->glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
@@ -1086,7 +1088,6 @@ public:
         m_gl->glStencilMaskSeparate(face, mask);
     }
     
-    // Advanced buffer functions
     void BufferSubData(unsigned int target, long long offset, long long size, const void* data) override { 
         m_gl->glBufferSubData(target, offset, size, data);
     }
@@ -1106,52 +1107,32 @@ public:
         m_gl->glFlushMappedBufferRange(target, offset, length);
     }
     
-    // Debug functions (OpenGL 4.3+) - Note: Some of these might not be available in Qt's OpenGL functions
     void DebugMessageControl(unsigned int source, unsigned int type, unsigned int severity, int count, const unsigned int* ids, unsigned char enabled) override { 
-        // May not be available in all Qt versions
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glDebugMessageControl(source, type, severity, count, ids, enabled);
-        }
+        m_gl->glDebugMessageControl(source, type, severity, count, ids, enabled);
     }
     void DebugMessageInsert(unsigned int source, unsigned int type, unsigned int id, unsigned int severity, int length, const char* buf) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glDebugMessageInsert(source, type, id, severity, length, buf);
-        }
+        m_gl->glDebugMessageInsert(source, type, id, severity, length, buf);
     }
     void DebugMessageCallback(void* callback, const void* userParam) override { 
-        // This might not be available in Qt's OpenGL functions
-        // m_gl->glDebugMessageCallback((GLDEBUGPROC)callback, userParam);
+        m_gl->glDebugMessageCallback((GLDEBUGPROC)callback, userParam);
     }
     unsigned int DebugMessageLog(unsigned int count, int bufSize, unsigned int* sources, unsigned int* types, unsigned int* ids, unsigned int* severities, int* lengths, char* messageLog) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            return m_gl->glGetDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
-        }
-        return 0;
+        return m_gl->glGetDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
     }
     void GetDebugMessageLog(unsigned int count, int bufSize, unsigned int* sources, unsigned int* types, unsigned int* ids, unsigned int* severities, int* lengths, char* messageLog) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glGetDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
-        }
+        m_gl->glGetDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
     }
     void PushDebugGroup(unsigned int source, unsigned int id, int length, const char* message) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glPushDebugGroup(source, id, length, message);
-        }
+        m_gl->glPushDebugGroup(source, id, length, message);
     }
     void PopDebugGroup() override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glPopDebugGroup();
-        }
+        m_gl->glPopDebugGroup();
     }
     void ObjectLabel(unsigned int identifier, unsigned int name, int length, const char* label) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glObjectLabel(identifier, name, length, label);
-        }
+        m_gl->glObjectLabel(identifier, name, length, label);
     }
     void GetObjectLabel(unsigned int identifier, unsigned int name, int bufSize, int* length, char* label) override { 
-        if (m_gl->hasOpenGLFeature(QOpenGLFunctions::DebugMarkers)) {
-            m_gl->glGetObjectLabel(identifier, name, bufSize, length, label);
-        }
+        m_gl->glGetObjectLabel(identifier, name, bufSize, length, label);
     }
 };
 #endif
@@ -1582,6 +1563,13 @@ inline void renderbufferStorage(unsigned int target, unsigned int internalformat
     g_gl->RenderbufferStorage(target, internalformat, width, height);
 #ifdef NETHER_GL_ERROR_CHECKING
     checkGLError("renderbufferStorage");
+#endif
+}
+
+inline void renderbufferStorageMultisample(unsigned int target, int samples, unsigned int internalformat, int width, int height) { 
+    g_gl->RenderbufferStorageMultisample(target, samples, internalformat, width, height);
+#ifdef NETHER_GL_ERROR_CHECKING
+    checkGLError("renderbufferStorageMultisample");
 #endif
 }
 

@@ -20,7 +20,7 @@ namespace nether {
 	class Texture {
 	public:
 		int LoadFromFile(const std::string& filePath);
-		void Create(int width, int height, unsigned char* pixels, TextureFormat format);
+		void Create(int width, int height, unsigned char* pixels, TextureFormat format, bool createMipMaps);
 		void Bind(TextureUnit texUnit);
 		void Bind();
 		void SetXWrap(TextureWrap xWrap);

@@ -36,7 +36,7 @@ namespace nether {
 		return 0;
 	}
 
-	void Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format)
+	void Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format, bool createMipMaps)
 	{
 		nether::gl::genTextures(1, &m_texture);
 		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
@@ -55,7 +55,11 @@ namespace nether {
 			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 			break;
 		}
-		nether::gl::generateMipmap(GL_TEXTURE_2D);
+
+		if(createMipMaps)
+		{
+			nether::gl::generateMipmap(GL_TEXTURE_2D);
+		}
 	}
 
 	void Texture::Bind(TextureUnit texUnit)
