@@ -36,25 +36,30 @@ namespace nether {
 		return 0;
 	}
 
+
+	void Texture::Create(int width, int height, TextureFormat textureFormat, bool createMipMaps)
+	{
+		Create(width, height, nullptr, textureFormat, createMipMaps);
+	}
+
 	void Texture::Create(int width, int height, unsigned char* pixels, TextureFormat format, bool createMipMaps)
 	{
 		nether::gl::genTextures(1, &m_texture);
 		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
+
 		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
 		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
 		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
 		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
 
-		switch (format) {
-		case TextureFormat::RGB8:
-			std::cout << "RGB8 format not currently supported. Loading RGB8 format makes it crash for some reason." << std::endl;
-			// nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-			return;
-			break;
-		case TextureFormat::RGBA8:
-			nether::gl::texImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-			break;
-		}
+		nether::gl::texImage2D(GL_TEXTURE_2D,
+							   0,
+							   TextureFormatUtils::GetGLInternalFormat(format),
+							   width, height,
+							   0,
+							   TextureFormatUtils::GetGLFormat(format),
+							   TextureFormatUtils::GetGLType(format),
+							   nullptr);
 
 		if(createMipMaps)
 		{

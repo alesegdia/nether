@@ -21,6 +21,7 @@ namespace nether {
 	public:
 		int LoadFromFile(const std::string& filePath);
 		void Create(int width, int height, unsigned char* pixels, TextureFormat format, bool createMipMaps);
+		void Create(int width, int height, TextureFormat textureFormat, bool createMipMaps);
 		void Bind(TextureUnit texUnit);
 		void Bind();
 		void SetXWrap(TextureWrap xWrap);
