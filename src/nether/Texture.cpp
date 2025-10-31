@@ -58,8 +58,14 @@ namespace nether {
 		nether::gl::generateMipmap(GL_TEXTURE_2D);
 	}
 
-	void Texture::Bind(TextureUnit texUnit) {
+	void Texture::Bind(TextureUnit texUnit)
+	{
 		nether::gl::activeTexture(GLenum(texUnit));
+		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
+	}
+
+	void Texture::Bind()
+	{
 		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
 	}
 

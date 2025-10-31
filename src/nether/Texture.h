@@ -22,6 +22,7 @@ namespace nether {
 		int LoadFromFile(const std::string& filePath);
 		void Create(int width, int height, unsigned char* pixels, TextureFormat format);
 		void Bind(TextureUnit texUnit);
+		void Bind();
 		void SetXWrap(TextureWrap xWrap);
 		void SetYWrap(TextureWrap yWrap);
 		void SetMinFilter(TextureMinFilter minFilter);
