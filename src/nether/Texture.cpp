@@ -60,7 +60,7 @@ namespace nether {
 							   0,
 							   TextureFormatUtils::GetGLFormat(format),
 							   TextureFormatUtils::GetGLType(format),
-							   nullptr);
+							   pixels);
 
 		if(createMipMaps)
 		{
