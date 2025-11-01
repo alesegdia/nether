@@ -2387,7 +2387,7 @@ inline void getObjectLabel(unsigned int identifier, unsigned int name, int bufSi
 // Initialization functions
 void initializeDirectGL();
 #ifdef AETHER_USE_QT
-void initializeQtGL(QOpenGLContext* context);
+void initializeQtGL(QOpenGLFunctions_4_5_Core* context);
 #endif
 
 } // namespace gl
