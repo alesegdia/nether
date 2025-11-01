@@ -5,6 +5,7 @@
 #include "nether/TextureMagFilter.h"
 #include "nether/TextureUnit.h"
 #include "nether/TextureWrap.h"
+#include "nether/GLType.h"
 
 #include <string>
 
@@ -21,6 +22,8 @@ namespace nether {
 	public:
 		int LoadFromFile(const std::string& filePath);
 		void Create(int width, int height, unsigned char* pixels, TextureFormat format, bool createMipMaps);
+		void Create(int width, int height, TextureFormat internalFormat, TextureFormat format, GLType type, bool createMipMaps);
+		void Create(int width, int height, unsigned int internalFormat, unsigned int format, unsigned int type, bool createMipMaps);
 		void Create(int width, int height, TextureFormat textureFormat, bool createMipMaps);
 		void Bind(TextureUnit texUnit);
 		void Bind();
@@ -53,6 +56,11 @@ namespace nether {
 		int GetCachedHeight()
 		{
 			return m_height;
+		}
+
+		unsigned int GetTextureID()
+		{
+			return m_texture;
 		}
 
 	private:

@@ -1,5 +1,7 @@
 #pragma once
 
+#define NETHER_GL_ERROR_CHECKING
+
 /*
  * NetherGL - OpenGL abstraction layer with optional error checking
  * 
@@ -149,7 +151,6 @@ public:
     virtual void TexStorage2D(unsigned int target, int levels, unsigned int internalformat, int width, int height) = 0;
     virtual void TexStorage3D(unsigned int target, int levels, unsigned int internalformat, int width, int height, int depth) = 0;
     virtual void GetTexImage(unsigned int target, int level, unsigned int format, unsigned int type, void* pixels) = 0;
-    virtual void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) = 0;
     virtual void CopyTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) = 0;
     
     // Uniform buffer objects
@@ -278,6 +279,9 @@ public:
     virtual void PopDebugGroup() = 0;
     virtual void ObjectLabel(unsigned int identifier, unsigned int name, int length, const char* label) = 0;
     virtual void GetObjectLabel(unsigned int identifier, unsigned int name, int bufSize, int* length, char* label) = 0;
+
+    virtual void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) = 0;
+
 };
 
 #ifdef NETHER_GL_ERROR_CHECKING
@@ -399,6 +403,12 @@ public:
     void Viewport(int x, int y, int width, int height) override { glViewport(x, y, width, height); }
     void PolygonMode(unsigned int face, unsigned int mode) override { glPolygonMode(face, mode); }
     
+
+    void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border)
+	{
+		glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
+	}
+
     // Error checking
     unsigned int GetError() override { return glGetError(); }
     
@@ -429,7 +439,6 @@ public:
     void TexStorage2D(unsigned int target, int levels, unsigned int internalformat, int width, int height) override { glTexStorage2D(target, levels, internalformat, width, height); }
     void TexStorage3D(unsigned int target, int levels, unsigned int internalformat, int width, int height, int depth) override { glTexStorage3D(target, levels, internalformat, width, height, depth); }
     void GetTexImage(unsigned int target, int level, unsigned int format, unsigned int type, void* pixels) override { glGetTexImage(target, level, format, type, pixels); }
-    void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) override { glCopyTexImage2D(target, level, internalformat, x, y, width, height, border); }
     void CopyTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) override { glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height); }
     
     // Uniform buffer objects
@@ -569,6 +578,7 @@ private:
     
 public:
     QtOpenGLFunctions(QOpenGLFunctions_4_5_Core* functions)
+        : m_gl(functions)
     {
     }
     
@@ -679,6 +689,21 @@ public:
     void GetTexLevelParameteriv(unsigned int target, int level, unsigned int pname, int* params) override { 
         m_gl->glGetTexLevelParameteriv(target, level, pname, params);
     }
+    void TexStorage2D(unsigned int target, int levels, unsigned int internalformat, int width, int height) override { 
+        m_gl->glTexStorage2D(target, levels, internalformat, width, height);
+    }
+    void TexStorage3D(unsigned int target, int levels, unsigned int internalformat, int width, int height, int depth) override { 
+        m_gl->glTexStorage3D(target, levels, internalformat, width, height, depth);
+    }
+    void GetTexImage(unsigned int target, int level, unsigned int format, unsigned int type, void* pixels) override { 
+        m_gl->glGetTexImage(target, level, format, type, pixels);
+    }
+    void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) override { 
+        m_gl->glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
+    }
+    void CopyTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) override { 
+        m_gl->glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+    }
     
     // Uniform functions
     void Uniform1i(int location, int v0) override { 
@@ -730,12 +755,17 @@ public:
     void ClearColor(float red, float green, float blue, float alpha) override { 
         m_gl->glClearColor(red, green, blue, alpha);
     }
+    void ClearDepth(double depth) override { 
+        m_gl->glClearDepth(depth);
+    }
+    void ClearStencil(int stencil) override { 
+        m_gl->glClearStencil(stencil);
+    }
     void Viewport(int x, int y, int width, int height) override { 
         m_gl->glViewport(x, y, width, height);
     }
     void PolygonMode(unsigned int face, unsigned int mode) override { 
-        // QOpenGLExtraFunctions should have polygon mode support
-        // m_gl->glPolygonMode(face, mode);
+        m_gl->glPolygonMode(face, mode);
     }
     
     // Error checking
@@ -804,12 +834,6 @@ public:
     }
     void CompressedTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int width, int height, unsigned int format, int imageSize, const void* data) override { 
         m_gl->glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
-    }
-    void TexStorage2D(unsigned int target, int levels, unsigned int internalformat, int width, int height) override { 
-        m_gl->glTexStorage2D(target, levels, internalformat, width, height);
-    }
-    void TexStorage3D(unsigned int target, int levels, unsigned int internalformat, int width, int height, int depth) override { 
-        m_gl->glTexStorage3D(target, levels, internalformat, width, height, depth);
     }
     void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) override { 
         m_gl->glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);

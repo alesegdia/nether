@@ -2,6 +2,7 @@
 #include <stb_image.h>
 
 #include "Texture.h"
+#include "GLType.h"
 #include <iostream>
 
 namespace nether {
@@ -25,7 +26,7 @@ namespace nether {
 		}
 
 		if (data != nullptr) {
-			Create(m_width, m_height, data, textureFormat);
+			Create(m_width, m_height, data, textureFormat, true);
 			stbi_image_free(data);
 		}
 		else {
@@ -61,6 +62,55 @@ namespace nether {
 							   TextureFormatUtils::GetGLType(format),
 							   nullptr);
 
+		if(createMipMaps)
+		{
+			nether::gl::generateMipmap(GL_TEXTURE_2D);
+		}
+	}
+
+	void Texture::Create(int width, int height, TextureFormat internalFormat, TextureFormat format, GLType type, bool createMipMaps)
+	{
+		nether::gl::genTextures(1, &m_texture);
+		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
+
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
+
+		nether::gl::texImage2D(GL_TEXTURE_2D,
+							   0,
+							   TextureFormatUtils::GetGLInternalFormat(format),
+							   width, height,
+							   0,
+							   TextureFormatUtils::GetGLFormat(format),
+							   TextureFormatUtils::GetGLType(format),
+							   nullptr);
+
+		if(createMipMaps)
+		{
+			nether::gl::generateMipmap(GL_TEXTURE_2D);
+		}
+
+	}
+
+
+	void Texture::Create(int width, int height, unsigned int internalFormat, unsigned int format, unsigned int type, bool createMipMaps)
+	{
+		nether::gl::genTextures(1, &m_texture);
+		nether::gl::bindTexture(GL_TEXTURE_2D, m_texture);
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(m_xWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(m_yWrap));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(m_minFilter));
+		nether::gl::texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(m_magFilter));
+		nether::gl::texImage2D(GL_TEXTURE_2D,
+							   0,
+							   internalFormat,
+							   width, height,
+							   0,
+							   format,
+							   type,
+							   nullptr);
 		if(createMipMaps)
 		{
 			nether::gl::generateMipmap(GL_TEXTURE_2D);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nether/NetherGL.h>
+
 
 namespace nether
 {

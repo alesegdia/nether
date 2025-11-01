@@ -26,11 +26,11 @@ void initializeDirectGL() {
 }
 
 #ifdef AETHER_USE_QT
-void initializeQtGL(QOpenGLContext* context) {
+void initializeQtGL(QOpenGLFunctions_4_5_Core* gl) {
     if (s_qtGL) {
         delete s_qtGL;
     }
-    s_qtGL = new QtOpenGLFunctions(context);
+    s_qtGL = new QtOpenGLFunctions(gl);
     g_gl = s_qtGL;
 }
 #endif
