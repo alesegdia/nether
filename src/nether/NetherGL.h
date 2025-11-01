@@ -835,12 +835,6 @@ public:
     void CompressedTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int width, int height, unsigned int format, int imageSize, const void* data) override { 
         m_gl->glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
     }
-    void CopyTexImage2D(unsigned int target, int level, unsigned int internalformat, int x, int y, int width, int height, int border) override { 
-        m_gl->glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
-    }
-    void CopyTexSubImage2D(unsigned int target, int level, int xoffset, int yoffset, int x, int y, int width, int height) override { 
-        m_gl->glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
-    }
     
     // Uniform buffer objects
     void BindBufferBase(unsigned int target, unsigned int index, unsigned int buffer) override { 
